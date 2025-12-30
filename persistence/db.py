@@ -15,7 +15,12 @@ DB_PATH = Path("data/expenses.db")
 def get_connection():
     """Establishes and returns a connection to the SQLite database."""
     DB_PATH.parent.mkdir(parents=True, exist_ok=True)
-    return sqlite3.connect(DB_PATH)
+    connection = sqlite3.connect(DB_PATH)
+    # Senza questa riga:
+    # potresti inserire una spesa con category_id inesistente
+    # nessun errore verrebbe lanciato
+    connection.execute("PRAGMA foreign_keys = ON;")
+    return connection
 
 
 def init_db():
@@ -33,4 +38,27 @@ def init_db():
         """
         )
 
+        # Tabella spese
+        cursor.execute(
+            """
+        CREATE TABLE IF NOT EXISTS expenses (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+
+            date TEXT NOT NULL,
+            amount REAL NOT NULL,
+
+            category_id INTEGER NOT NULL,
+            description TEXT,
+
+            is_recurring INTEGER NOT NULL DEFAULT 0,
+
+            attachment_path TEXT,
+            attachment_type TEXT,
+
+            created_at TEXT NOT NULL,
+
+            FOREIGN KEY (category_id) REFERENCES categories(id)
+        )
+        """
+        )
         conn.commit()
