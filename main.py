@@ -9,20 +9,16 @@ from domain.models import Category
 from persistence.db import init_db
 from persistence.category_repository import CategoryRepository
 from persistence.expense_repository import ExpenseRepository
+from services.category_service import CategoryService
 from services.expense_service import ExpenseService
 
 
 def load_base_categories():
     """Loads base categories from a JSON file into the database."""
-    repo = CategoryRepository()
-    existing = {c.name for c in repo.get_all()}
+    repository = CategoryRepository()
+    service = CategoryService(repository)
 
-    with open("resources/categories.json", "r", encoding="utf-8") as f:
-        base_categories = json.load(f)
-
-    for name in base_categories:
-        if name not in existing:
-            repo.add(Category(id=None, name=name, is_custom=False))
+    service.bootstrap_default_categories()
 
 
 def main() -> None:
@@ -31,6 +27,8 @@ def main() -> None:
     """
     # Initialize the database schema
     init_db()
+
+    load_base_categories()
 
     # Create repository and service instances
     expense_repository = ExpenseRepository()

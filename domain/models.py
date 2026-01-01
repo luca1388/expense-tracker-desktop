@@ -31,4 +31,7 @@ class Expense:
     attachment_path: Optional[str]
     attachment_type: Optional[str]
 
+    analysis_data: Optional[str]
+    analysis_summary: Optional[str]
+
     created_at: datetime

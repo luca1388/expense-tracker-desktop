@@ -1,0 +1,74 @@
+[
+  {
+    "name": "Affitto",
+    "type": "Utility"
+  },
+  {
+    "name": "Luce",
+    "type": "Utility"
+  },
+  {
+    "name": "Gas",
+    "type": "Utility"
+  },
+  {
+    "name": "Acqua",
+    "type": "Utility"
+  },
+  {
+    "name": "Cibo",
+    "type": "Food"
+  },
+  {
+    "name": "Ristorante",
+    "type": "Food"
+  },
+  {
+    "name": "Salute",
+    "type": "Health"
+  },
+  {
+    "name": "Medicina",
+    "type": "Health"
+  },
+  {
+    "name": "Cinema",
+    "type": "Entertainment"
+  },
+  {
+    "name": "Abbigliamento",
+    "type": "Clothing"
+  },
+  {
+    "name": "Carburante",
+    "type": "Transportation"
+  },
+  {
+    "name": "Internet",
+    "type": "Utility"
+  },
+  {
+    "name": "Telefono",
+    "type": "Utility"
+  },
+  {
+    "name": "Spesa",
+    "type": "Food"
+  },
+  {
+    "name": "Trasporti",
+    "type": "Transportation"
+  },
+  {
+    "name": "Assicurazioni",
+    "type": "Utility"
+  },
+  {
+    "name": "Viaggi",
+    "type": "Travel"
+  },
+  {
+    "name": "Regali",
+    "type": "Gifts"
+  }
+]

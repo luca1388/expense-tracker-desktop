@@ -40,9 +40,11 @@ class ExpenseRepository:
                     is_recurring,
                     attachment_path,
                     attachment_type,
+                    analysis_data,
+                    analysis_summary,
                     created_at
                 )
-                VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
                 """,
                 (
                     expense.date.isoformat(),
@@ -52,6 +54,8 @@ class ExpenseRepository:
                     int(expense.is_recurring),
                     expense.attachment_path,
                     expense.attachment_type,
+                    expense.analysis_data,
+                    expense.analysis_summary,
                     expense.created_at.isoformat(),
                 ),
             )
@@ -123,5 +127,7 @@ class ExpenseRepository:
             is_recurring=bool(row[5]),
             attachment_path=row[6],
             attachment_type=row[7],
-            created_at=datetime.fromisoformat(row[8]),
+            analysis_data=row[8],
+            analysis_summary=row[9],
+            created_at=datetime.fromisoformat(row[10]),
         )

@@ -33,6 +33,8 @@ class ExpenseService:
         is_recurring: bool = False,
         attachment_path: Optional[str] = None,
         attachment_type: Optional[str] = None,
+        analysis_data: Optional[str] = None,
+        analysis_summary: Optional[str] = None,
     ) -> Expense:
         """
         Creates and persists a new expense.
@@ -51,6 +53,8 @@ class ExpenseService:
             is_recurring=is_recurring,
             attachment_path=attachment_path,
             attachment_type=attachment_type,
+            analysis_data=analysis_data,
+            analysis_summary=analysis_summary,
             created_at=datetime.now(),
         )
 

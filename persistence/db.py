@@ -54,6 +54,9 @@ def init_db():
 
             attachment_path TEXT,
             attachment_type TEXT,
+            
+            analysis_data TEXT,
+            analysis_summary TEXT,
 
             created_at TEXT NOT NULL,
 
