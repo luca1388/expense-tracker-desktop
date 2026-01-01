@@ -2,10 +2,7 @@
 Docstring for main
 """
 
-import json
-
 from datetime import date
-from domain.models import Category
 from persistence.db import init_db
 from persistence.category_repository import CategoryRepository
 from persistence.expense_repository import ExpenseRepository
@@ -19,6 +16,34 @@ def load_base_categories():
     service = CategoryService(repository)
 
     service.bootstrap_default_categories()
+
+
+# def bootstrap_recurring_expense(db: Database, category_id: int) -> None:
+#     """
+#     Creates a recurring expense if it does not already exist.
+#     """
+#     recurring_repo = RecurringExpenseRepository(db)
+
+#     existing = recurring_repo.get_by_name("Electricity Bill")
+#     if existing:
+#         return
+
+#     recurring = RecurringExpense(
+#         id=None,
+#         name="Electricity Bill",
+#         amount=120.0,
+#         category_id=category_id,
+#         frequency=RecurrenceFrequency.MONTHLY,
+#         start_date=date(2024, 1, 1),
+#         end_date=None,
+#         description="Monthly electricity bill",
+#         attachment_path=None,
+#         attachment_type=None,
+#         last_generated_date=None,
+#         created_at=None,  # Will be set by the repository
+#     )
+
+#     recurring_repo.add(recurring)
 
 
 def main() -> None:

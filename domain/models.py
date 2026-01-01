@@ -3,6 +3,7 @@
 from dataclasses import dataclass
 from datetime import date, datetime
 from typing import Optional
+from enum import Enum
 
 
 @dataclass
@@ -33,5 +34,43 @@ class Expense:
 
     analysis_data: Optional[str]
     analysis_summary: Optional[str]
+
+    created_at: datetime
+
+
+class RecurrenceFrequency(Enum):
+    """
+    Defines how often a recurring expense occurs.
+    """
+
+    MONTHLY = "monthly"
+    YEARLY = "yearly"
+
+
+@dataclass
+class RecurringExpense:
+    """
+    Represents a recurring expense template.
+
+    This entity is used to generate actual Expense instances.
+    """
+
+    id: Optional[int]
+
+    name: str
+    amount: float
+    category_id: int
+
+    frequency: RecurrenceFrequency
+
+    start_date: date
+    end_date: Optional[date]
+
+    description: Optional[str]
+
+    attachment_path: Optional[str]
+    attachment_type: Optional[str]
+
+    last_generated_date: Optional[date]
 
     created_at: datetime

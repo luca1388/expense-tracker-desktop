@@ -64,4 +64,35 @@ def init_db():
         )
         """
         )
+
+        # Recurring expenses table
+        cursor.execute(
+            """
+        CREATE TABLE IF NOT EXISTS recurring_expenses (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+
+            name TEXT NOT NULL,
+            amount REAL NOT NULL,
+
+            category_id INTEGER NOT NULL,
+
+            frequency TEXT NOT NULL,
+
+            start_date TEXT NOT NULL,
+            end_date TEXT,
+
+            description TEXT,
+
+            attachment_path TEXT,
+            attachment_type TEXT,
+
+            last_generated_date TEXT,
+
+            created_at TEXT NOT NULL,
+
+            FOREIGN KEY (category_id) REFERENCES categories(id)
+        )
+        """
+        )
+
         conn.commit()
