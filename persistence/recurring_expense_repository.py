@@ -88,6 +88,23 @@ class RecurringExpenseRepository:
 
             return self._map_row_to_entity(row)
 
+    def get_by_name(self, name: str) -> Optional[RecurringExpense]:
+        """
+        Returns a recurring expense by its name, if found.
+        """
+        with get_connection() as connection:
+            cursor = connection.cursor()
+            cursor.execute(
+                "SELECT * FROM recurring_expenses WHERE name = ?",
+                (name,),
+            )
+            row = cursor.fetchone()
+
+            if row is None:
+                return None
+
+            return self._map_row_to_entity(row)
+
     def update_last_generated_date(
         self, recurring_expense_id: int, generated_date: date
     ) -> None:

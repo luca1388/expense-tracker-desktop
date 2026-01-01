@@ -1,6 +1,6 @@
 """Domain models for the expense tracker application."""
 
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from datetime import date, datetime
 from typing import Optional
 from enum import Enum
@@ -73,4 +73,4 @@ class RecurringExpense:
 
     last_generated_date: Optional[date]
 
-    created_at: datetime
+    created_at: datetime = field(default_factory=datetime.now)

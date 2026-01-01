@@ -6,6 +6,7 @@ This module provides repository classes to interact with the database
 for managing expense categories.
 """
 
+from typing import Optional
 from domain.models import Category
 from persistence.db import get_connection
 
@@ -39,3 +40,15 @@ class CategoryRepository:
                 (category.name, int(category.is_custom)),
             )
             conn.commit()
+
+    def get_by_name(self, name: str) -> Optional[Category]:
+        """
+        Returns a category by its name, if it exists.
+        """
+        with get_connection() as connection:
+            cursor = connection.cursor()
+            cursor.execute("SELECT * FROM categories WHERE name = ?", (name,))
+            row = cursor.fetchone()
+            if row is None:
+                return None
+            return Category(id=row[0], name=row[1], is_custom=bool(row[2]))
