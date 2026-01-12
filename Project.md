@@ -279,3 +279,8 @@ Ogni nuova feature deve rispettare:
 - i boundaries definiti
 - l’architettura stabilita
 - il principio di semplicità
+
+## 13. Future steps
+
+The app currently tracks expenses only.
+Future versions may support expense adjustments or reimbursements without introducing full income tracking.
