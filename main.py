@@ -33,13 +33,13 @@ def bootstrap_recurring_expense(category_id: int) -> None:
 
     recurring = RecurringExpense(
         id=None,
-        name="Electricity Bill",
-        amount=120.0,
+        name="ILIAD personale",
+        amount=7.99,
         category_id=category_id,
         frequency=RecurrenceFrequency.MONTHLY,
         start_date=date(2024, 1, 1),
         end_date=None,
-        description="Monthly electricity bill",
+        description="Scheda SIM Iliad telefono",
         attachment_path=None,
         attachment_type=None,
         last_generated_date=None,
@@ -84,14 +84,14 @@ def main() -> None:
         print(exp)
 
     category_repo = CategoryRepository()
-    electricity_category = category_repo.get_by_name("Luce")
+    telefono_category = category_repo.get_by_name("Telefono")
 
-    if not electricity_category:
-        raise RuntimeError("Electricity category not found")
+    if not telefono_category:
+        raise RuntimeError("Telefono category not found")
 
-    print(electricity_category)
+    print(telefono_category)
 
-    bootstrap_recurring_expense(electricity_category.id)
+    bootstrap_recurring_expense(telefono_category.id)
 
     # Run recurring expense generation
     recurring_repo = RecurringExpenseRepository()
