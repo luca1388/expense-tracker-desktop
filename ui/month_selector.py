@@ -27,7 +27,9 @@ class MonthFilterFrame(ttk.Frame):
 
     def _build_ui(self):
         """Build filter controls and navigation buttons."""
-        # ttk.Button(self, text="◀", width=3, command=self._prev_month).pack(side=tk.LEFT)
+
+        # ttk.Label(self, text="Select the time range:").pack(side=tk.LEFT, padx=0)
+        ttk.Button(self, text="<", width=3, command=self._prev_month).pack(side=tk.LEFT)
 
         ttk.Label(self, text="Year:").pack(side=tk.LEFT, padx=5)
 
@@ -52,7 +54,9 @@ class MonthFilterFrame(ttk.Frame):
 
         self.month_var.trace_add("write", self._on_month_var_changed)
 
-        # ttk.Button(self, text="▶", width=3, command=self._next_month).pack(side=tk.LEFT, padx=5)
+        ttk.Button(self, text=">", width=3, command=self._next_month).pack(
+            side=tk.LEFT, padx=5
+        )
 
         self.total_label = ttk.Label(
             self, text="Total: € 0.00", font=("Arial", 10, "bold")
@@ -78,22 +82,22 @@ class MonthFilterFrame(ttk.Frame):
         """
         self.total_label.config(text=f"Total: € {total:.2f}")
 
-    # def _prev_month(self):
-    #     """Move selection to the previous month."""
-    #     year, month = self.year_var.get(), self.month_var.get()
-    #     if month == 1:
-    #         self.year_var.set(year - 1)
-    #         self.month_var.set(12)
-    #     else:
-    #         self.month_var.set(month - 1)
-    #     self._notify_change()
+    def _prev_month(self):
+        """Move selection to the previous month."""
+        year, month = self.year_var.get(), self.month_var.get()
+        if month == 1:
+            self.year_var.set(year - 1)
+            self.month_var.set(12)
+        else:
+            self.month_var.set(month - 1)
+        self._notify_change()
 
-    # def _next_month(self):
-    #     """Move selection to the next month."""
-    #     year, month = self.year_var.get(), self.month_var.get()
-    #     if month == 12:
-    #         self.year_var.set(year + 1)
-    #         self.month_var.set(1)
-    #     else:
-    #         self.month_var.set(month + 1)
-    #     self._notify_change()
+    def _next_month(self):
+        """Move selection to the next month."""
+        year, month = self.year_var.get(), self.month_var.get()
+        if month == 12:
+            self.year_var.set(year + 1)
+            self.month_var.set(1)
+        else:
+            self.month_var.set(month + 1)
+        self._notify_change()
