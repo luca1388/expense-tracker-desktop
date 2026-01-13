@@ -53,6 +53,11 @@ class ExpenseFormFrame(ttk.Frame):
         ttk.Button(self, text="Add Expense", command=self._submit).pack(pady=10)
 
     def _submit(self):
+        validation_error = self._validate_form()
+        if validation_error:
+            messagebox.showerror("Validation Error", validation_error)
+            return
+
         try:
             exp = Expense(
                 id=None,
@@ -73,6 +78,44 @@ class ExpenseFormFrame(ttk.Frame):
 
             self.amount_var.set("")
             self.desc_var.set("")
+            self.category_cb.current(0)
+            messagebox.showinfo("Success", "Expense added successfully!")
 
-        except Exception as e:
-            messagebox.showerror("Error", str(e))
+        except ValueError as e:
+            messagebox.showerror("Error", f"Failed to add expense: {str(e)}")
+
+    def _validate_form(self):
+        """Validate all form fields. Returns error message if validation fails, None otherwise."""
+
+        # Validate date
+        date_str = self.date_var.get().strip()
+        if not date_str:
+            return "Date cannot be empty."
+        try:
+            date.fromisoformat(date_str)
+        except ValueError:
+            return "Invalid date format. Use YYYY-MM-DD (e.g., 2026-01-13)."
+
+        # Validate amount
+        amount_str = self.amount_var.get().strip()
+        if not amount_str:
+            return "Amount cannot be empty."
+        try:
+            amount = float(amount_str)
+            if amount <= 0:
+                return "Amount must be a positive number."
+        except ValueError:
+            return "Invalid amount. Please enter a valid number."
+
+        # Validate category
+        if not self.category_cb.get():
+            return "Please select a category."
+
+        # Validate description
+        description = self.desc_var.get().strip()
+        if not description:
+            return "Description cannot be empty."
+        if len(description) > 100:
+            return "Description is too long (max 100 characters)."
+
+        return None
