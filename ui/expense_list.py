@@ -18,7 +18,8 @@ class ExpenseListFrame(ttk.Frame):
         self.expense_repo = expense_repo
 
         self._build_ui()
-        self.refresh()
+        # Improvement: insert the current month expenses by default
+        self.refresh(start_date=None, end_date=None)
 
     def _build_ui(self):
         ttk.Label(self, text="Expenses", font=("Arial", 12, "bold")).pack(anchor="w")
@@ -39,14 +40,19 @@ class ExpenseListFrame(ttk.Frame):
 
         self.tree.pack(fill=tk.BOTH, expand=True)
 
-    def refresh(self):
+    def refresh(self, start_date, end_date) -> float:
         """Refreshes the expense list from the repository."""
         for row in self.tree.get_children():
             self.tree.delete(row)
 
-        expenses = self.expense_repo.get_all()
+        total = 0.0
+        if not start_date or not end_date:
+            expenses = self.expense_repo.get_all()
+        else:
+            expenses = self.expense_repo.get_by_period(start_date, end_date)
 
         for exp in expenses:
+            total += exp.amount
             self.tree.insert(
                 "",
                 tk.END,
@@ -57,3 +63,5 @@ class ExpenseListFrame(ttk.Frame):
                     exp.description or "",
                 ),
             )
+
+        return total
