@@ -15,6 +15,10 @@ from ui.expense_form import ExpenseFormFrame
 
 
 class ExpenseTrackerApp(tk.Tk):
+    """
+    Docstring for ExpenseTrackerApp
+    """
+
     def __init__(self):
         super().__init__()
 

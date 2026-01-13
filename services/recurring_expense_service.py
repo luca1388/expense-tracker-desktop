@@ -1,3 +1,4 @@
+from calendar import monthrange
 from datetime import date, datetime
 from typing import List
 
@@ -117,21 +118,7 @@ class RecurringExpenseService:
 
         day = min(
             current_date.day,
-            self._days_in_month(year, month),
+            monthrange(year, month)[1],
         )
 
         return date(year, month, day)
-
-    def _days_in_month(self, year: int, month: int) -> int:
-        """
-        Returns the number of days in a given month.
-        """
-        if month == 2:
-            if year % 4 == 0 and (year % 100 != 0 or year % 400 == 0):
-                return 29
-            return 28
-
-        if month in {4, 6, 9, 11}:
-            return 30
-
-        return 31
