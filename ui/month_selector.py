@@ -29,6 +29,8 @@ class MonthFilterFrame(ttk.Frame):
         """Build filter controls and navigation buttons."""
         # ttk.Button(self, text="◀", width=3, command=self._prev_month).pack(side=tk.LEFT)
 
+        ttk.Label(self, text="Year:").pack(side=tk.LEFT, padx=5)
+
         ttk.Spinbox(
             self,
             from_=2000,
@@ -37,6 +39,8 @@ class MonthFilterFrame(ttk.Frame):
             textvariable=self.year_var,
             command=self._notify_change,
         ).pack(side=tk.LEFT, padx=5)
+
+        ttk.Label(self, text="Month:").pack(side=tk.LEFT, padx=5)
 
         ttk.Combobox(
             self,

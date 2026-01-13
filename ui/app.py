@@ -58,9 +58,21 @@ class ExpenseTrackerApp(tk.Tk):
             content_frame,
             expense_repo=self.expense_repo,
             category_repo=self.category_repo,
-            on_expense_added=self.expense_list.refresh,
+            on_expense_added=self._on_expense_added,
         )
         self.expense_form.pack(side=tk.RIGHT, fill=tk.Y)
+
+        self._on_month_changed(
+            self.filter_frame.year_var.get(), self.filter_frame.month_var.get()
+        )
+
+    def _on_expense_added(self):
+        """Refresh the expense list with the currently selected month after adding an expense."""
+        start_date, end_date = month_date_range(
+            self.filter_frame.year_var.get(), self.filter_frame.month_var.get()
+        )
+        total = self.expense_list.refresh(start_date=start_date, end_date=end_date)
+        self.filter_frame.update_total(total)
 
     def _on_month_changed(self, year: int, month: int):
         """Callback triggered when the month selection changes."""
