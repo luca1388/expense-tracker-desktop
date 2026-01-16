@@ -5,6 +5,7 @@ Defines the main application window for the Expense Tracker desktop app.
 
 import tkinter as tk
 from tkinter import ttk
+from tkinter import messagebox
 
 from persistence.expense_repository import ExpenseRepository
 from persistence.category_repository import CategoryRepository
@@ -103,3 +104,27 @@ class ExpenseTrackerApp(tk.Tk):
         """Handle delete button click."""
         # TODO: Implement delete functionality
         pass
+
+    def _on_delete_expense_requested(self):
+        """
+        Handle delete expense action from the toolbar.
+        """
+        expense_id = self.expense_list.get_selected_expense_id()
+        if expense_id is None:
+            return
+
+        confirmed = messagebox.askyesno(
+            title="Conferma eliminazione",
+            message="Sei sicuro di voler eliminare la spesa selezionata?",
+        )
+        if not confirmed:
+            return
+
+        self.expense_repo.delete(expense_id)
+
+        # Refresh current month
+        year = self.toolbar.year_var.get()
+        month = self.toolbar.month_var.get()
+        start_date, end_date = month_date_range(year, month)
+
+        self.expense_list.refresh(start_date=start_date, end_date=end_date)

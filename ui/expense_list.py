@@ -41,7 +41,7 @@ class ExpenseListFrame(ttk.Frame):
         )
         self.total_label.pack(side=tk.RIGHT)
 
-        columns = ("data", "importo", "categoria", "descrizione")
+        columns = ("id", "data", "importo", "categoria", "descrizione")
 
         self.tree = ttk.Treeview(
             self,
@@ -50,11 +50,13 @@ class ExpenseListFrame(ttk.Frame):
             selectmode="browse",
         )
 
+        self.tree.heading("id", text="ID")
         self.tree.heading("data", text="Data")
         self.tree.heading("importo", text="Importo")
         self.tree.heading("categoria", text="Categoria")
         self.tree.heading("descrizione", text="Descrizione")
 
+        self.tree.column("id", width=0)
         self.tree.column("data", width=90)
         self.tree.column("importo", width=80, anchor="e")
         self.tree.column("categoria", width=120)
@@ -82,6 +84,7 @@ class ExpenseListFrame(ttk.Frame):
                 "",
                 tk.END,
                 values=(
+                    exp.id,
                     exp.date.isoformat(),
                     f"{exp.amount:.2f}",
                     exp.category_id,  # miglioreremo con join o cache
@@ -97,3 +100,16 @@ class ExpenseListFrame(ttk.Frame):
         has_selection = bool(self.tree.selection())
         if self.on_selection_changed:
             self.on_selection_changed(has_selection)
+
+    def get_selected_expense_id(self) -> int | None:
+        """
+        Return the ID of the currently selected expense, if any.
+        """
+        selection = self.tree.selection()
+        if not selection:
+            return None
+
+        # Get the tree item and extract the ID from the first value column
+        item = selection[0]
+        values = self.tree.item(item, "values")
+        return int(values[0]) if values else None

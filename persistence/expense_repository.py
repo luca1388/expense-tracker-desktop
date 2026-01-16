@@ -131,3 +131,13 @@ class ExpenseRepository:
             analysis_summary=row[9],
             created_at=datetime.fromisoformat(row[10]),
         )
+
+    def delete(self, expense_id: int) -> None:
+        """
+        Delete an expense by its ID.
+
+        :param expense_id: ID of the expense to delete
+        """
+        with get_connection() as conn:
+            conn.execute("DELETE FROM expenses WHERE id = ?", (expense_id,))
+            conn.commit()

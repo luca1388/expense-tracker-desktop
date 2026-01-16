@@ -79,11 +79,11 @@ class ToolbarFrame(ttk.Frame):
 
         # --- MIDDLE: Action buttons
         action_frame = ttk.Frame(self)
-        action_frame.pack(side=tk.LEFT, padx=20)
+        action_frame.pack(side=tk.RIGHT, padx=20)
 
         self.edit_button = ttk.Button(
             action_frame,
-            text="✏ Edit",
+            text="Modifica",
             command=self.on_edit_expense_requested,
             state=tk.DISABLED,
         )
@@ -91,7 +91,7 @@ class ToolbarFrame(ttk.Frame):
 
         self.delete_button = ttk.Button(
             action_frame,
-            text="🗑 Delete",
+            text="Elimina",
             command=self.on_delete_expense_requested,
             state=tk.DISABLED,
         )
