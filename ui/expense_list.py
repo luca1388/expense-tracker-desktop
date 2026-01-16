@@ -13,30 +13,55 @@ class ExpenseListFrame(ttk.Frame):
 
     """
 
-    def __init__(self, parent, expense_repo):
+    def __init__(
+        self,
+        parent,
+        expense_repo,
+        on_selection_changed=None,
+    ):
         super().__init__(parent)
         self.expense_repo = expense_repo
+        self.on_selection_changed = on_selection_changed
 
         self._build_ui()
         # Improvement: insert the current month expenses by default
         self.refresh(start_date=None, end_date=None)
 
     def _build_ui(self):
-        ttk.Label(self, text="Expenses", font=("Arial", 12, "bold")).pack(anchor="w")
+        # Header frame with title and total
+        header_frame = ttk.Frame(self)
+        header_frame.pack(anchor="w", fill=tk.X, pady=(0, 5))
 
-        columns = ("date", "amount", "category", "description")
+        ttk.Label(header_frame, text="Spese", font=("Arial", 12, "bold")).pack(
+            side=tk.LEFT
+        )
 
-        self.tree = ttk.Treeview(self, columns=columns, show="headings")
+        self.total_label = ttk.Label(
+            header_frame, text="Totale: € 0.00", font=("Arial", 10, "bold")
+        )
+        self.total_label.pack(side=tk.RIGHT)
 
-        self.tree.heading("date", text="Date")
-        self.tree.heading("amount", text="Amount")
-        self.tree.heading("category", text="Category")
-        self.tree.heading("description", text="Description")
+        columns = ("data", "importo", "categoria", "descrizione")
 
-        self.tree.column("date", width=90)
-        self.tree.column("amount", width=80, anchor="e")
-        self.tree.column("category", width=120)
-        self.tree.column("description", width=250)
+        self.tree = ttk.Treeview(
+            self,
+            columns=columns,
+            show="headings",
+            selectmode="browse",
+        )
+
+        self.tree.heading("data", text="Data")
+        self.tree.heading("importo", text="Importo")
+        self.tree.heading("categoria", text="Categoria")
+        self.tree.heading("descrizione", text="Descrizione")
+
+        self.tree.column("data", width=90)
+        self.tree.column("importo", width=80, anchor="e")
+        self.tree.column("categoria", width=120)
+        self.tree.column("descrizione", width=250)
+
+        # Enable / disable buttons based on selection
+        self.tree.bind("<<TreeviewSelect>>", self._on_selection_changed)
 
         self.tree.pack(fill=tk.BOTH, expand=True)
 
@@ -64,4 +89,11 @@ class ExpenseListFrame(ttk.Frame):
                 ),
             )
 
+        self.total_label.config(text=f"Totale: € {total:.2f}")
         return total
+
+    def _on_selection_changed(self, event):
+        """Notify parent when selection changes."""
+        has_selection = bool(self.tree.selection())
+        if self.on_selection_changed:
+            self.on_selection_changed(has_selection)

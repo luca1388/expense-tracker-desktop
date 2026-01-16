@@ -10,9 +10,8 @@ from persistence.expense_repository import ExpenseRepository
 from persistence.category_repository import CategoryRepository
 
 from ui.expense_list import ExpenseListFrame
-
+from ui.toolbar import ToolbarFrame
 from ui.expense_form import ExpenseFormFrame
-from ui.month_selector import MonthFilterFrame
 from utils.dates import month_date_range
 
 
@@ -34,14 +33,17 @@ class ExpenseTrackerApp(tk.Tk):
         self._build_ui()
 
     def _build_ui(self):
-        # --- TOP: Month selector + total
+        # --- TOP: Unified toolbar
         main_frame = ttk.Frame(self, padding=10)
         main_frame.pack(fill=tk.BOTH, expand=True)
 
-        self.filter_frame = MonthFilterFrame(
-            main_frame, on_month_changed=self._on_month_changed
+        self.toolbar = ToolbarFrame(
+            main_frame,
+            on_month_changed=self._on_month_changed,
+            on_edit_expense_requested=self._on_edit_expense_requested,
+            on_delete_expense_requested=self._on_delete_expense_requested,
         )
-        self.filter_frame.pack(fill=tk.X)
+        self.toolbar.pack(fill=tk.X)
 
         # --- BOTTOM: content frame (Expense list + Add form)
         content_frame = ttk.Frame(main_frame)
@@ -49,7 +51,9 @@ class ExpenseTrackerApp(tk.Tk):
 
         # Left: Expense list
         self.expense_list = ExpenseListFrame(
-            content_frame, expense_repo=self.expense_repo
+            content_frame,
+            expense_repo=self.expense_repo,
+            on_selection_changed=self._on_expense_selection_changed,
         )
         self.expense_list.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
 
@@ -63,22 +67,39 @@ class ExpenseTrackerApp(tk.Tk):
         self.expense_form.pack(side=tk.RIGHT, fill=tk.Y)
 
         self._on_month_changed(
-            self.filter_frame.year_var.get(), self.filter_frame.month_var.get()
+            self.toolbar.year_var.get(), self.toolbar.month_var.get()
         )
 
     def _on_expense_added(self):
         """Refresh the expense list with the currently selected month after adding an expense."""
         start_date, end_date = month_date_range(
-            self.filter_frame.year_var.get(), self.filter_frame.month_var.get()
+            self.toolbar.year_var.get(), self.toolbar.month_var.get()
         )
-        total = self.expense_list.refresh(start_date=start_date, end_date=end_date)
-        self.filter_frame.update_total(total)
+        self.expense_list.refresh(start_date=start_date, end_date=end_date)
+        self.toolbar.disable_actions()
 
     def _on_month_changed(self, year: int, month: int):
         """Callback triggered when the month selection changes."""
-        if not hasattr(self, "filter_frame") or not hasattr(self, "expense_list"):
+        if not hasattr(self, "toolbar") or not hasattr(self, "expense_list"):
             return
         start_date, end_date = month_date_range(year, month)
 
-        total = self.expense_list.refresh(start_date=start_date, end_date=end_date)
-        self.filter_frame.update_total(total)
+        self.expense_list.refresh(start_date=start_date, end_date=end_date)
+        self.toolbar.disable_actions()
+
+    def _on_expense_selection_changed(self, has_selection: bool):
+        """Callback triggered when expense selection changes."""
+        if has_selection:
+            self.toolbar.enable_actions()
+        else:
+            self.toolbar.disable_actions()
+
+    def _on_edit_expense_requested(self):
+        """Handle edit button click."""
+        # TODO: Implement edit functionality
+        pass
+
+    def _on_delete_expense_requested(self):
+        """Handle delete button click."""
+        # TODO: Implement delete functionality
+        pass
