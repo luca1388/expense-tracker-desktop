@@ -70,13 +70,13 @@ class ExpenseTrackerApp(tk.Tk):
         self.expense_form.pack(side=tk.RIGHT, fill=tk.Y)
 
         self._on_month_changed(
-            self.toolbar.year_var.get(), self.toolbar.month_var.get()
+            self.toolbar.year_var.get(), self.toolbar.get_selected_month_number()
         )
 
     def _on_expense_added(self):
         """Refresh the expense list with the currently selected month after adding an expense."""
         start_date, end_date = month_date_range(
-            self.toolbar.year_var.get(), self.toolbar.month_var.get()
+            self.toolbar.year_var.get(), self.toolbar.get_selected_month_number()
         )
         self.expense_list.refresh(start_date=start_date, end_date=end_date)
         self.toolbar.disable_actions()
@@ -120,7 +120,7 @@ class ExpenseTrackerApp(tk.Tk):
 
         # Refresh current month
         year = self.toolbar.year_var.get()
-        month = self.toolbar.month_var.get()
+        month = self.toolbar.get_selected_month_number()
         start_date, end_date = month_date_range(year, month)
 
         self.expense_list.refresh(start_date=start_date, end_date=end_date)
