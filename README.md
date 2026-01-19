@@ -65,3 +65,4 @@ This project is licensed under the MIT License. See the [LICENSE](LICENSE) file 
 - Local AI suggestions for categorization and insights
 - Enhanced charts and analytics
 - Cross-platform UI improvements
+- Multi language support
