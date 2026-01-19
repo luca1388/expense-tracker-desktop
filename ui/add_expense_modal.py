@@ -41,12 +41,21 @@ class AddExpenseModal(tk.Toplevel):
         self._build_ui(expense_service, category_service, on_expense_added)
 
     def _position_modal(self, parent):
-        """Position the modal window relative to the parent."""
+        """Position the modal window at the center of the screen."""
         self.update_idletasks()
-        parent_x = parent.winfo_x()
-        parent_y = parent.winfo_y()
-        x = parent_x * 2
-        y = parent_y * 2
+
+        # Get screen dimensions
+        screen_width = self.winfo_screenwidth()
+        screen_height = self.winfo_screenheight()
+
+        # Get modal dimensions
+        modal_width = self.winfo_width()
+        modal_height = self.winfo_height()
+
+        # Calculate center position
+        x = (screen_width - modal_width) // 2
+        y = (screen_height - modal_height) // 2
+
         self.geometry(f"+{x}+{y}")
 
     def _build_ui(self, expense_service, category_service, on_expense_added):

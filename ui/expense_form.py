@@ -23,7 +23,6 @@ class ExpenseFormFrame(ttk.Frame):
         self._build_ui()
 
     def _build_ui(self):
-        ttk.Label(self, text="Add Expense", font=("Arial", 12, "bold")).pack(anchor="w")
 
         self.date_var = tk.StringVar(value=date.today().isoformat())
         self.amount_var = tk.StringVar()
@@ -32,20 +31,20 @@ class ExpenseFormFrame(ttk.Frame):
         categories = self.category_service.get_all_categories()
         self.categories = {c.name: c.id for c in categories}
 
-        ttk.Label(self, text="Date (YYYY-MM-DD)").pack(anchor="w")
+        ttk.Label(self, text="Data (YYYY-MM-DD)").pack(anchor="w")
         ttk.Entry(self, textvariable=self.date_var).pack(fill=tk.X)
 
-        ttk.Label(self, text="Amount").pack(anchor="w")
+        ttk.Label(self, text="Importo").pack(anchor="w")
         ttk.Entry(self, textvariable=self.amount_var).pack(fill=tk.X)
 
-        ttk.Label(self, text="Category").pack(anchor="w")
+        ttk.Label(self, text="Categoria").pack(anchor="w")
         self.category_cb = ttk.Combobox(
             self, values=list(self.categories.keys()), state="readonly"
         )
         self.category_cb.pack(fill=tk.X)
         self.category_cb.current(0)
 
-        ttk.Label(self, text="Description").pack(anchor="w")
+        ttk.Label(self, text="Descrizione").pack(anchor="w")
         ttk.Entry(self, textvariable=self.desc_var).pack(fill=tk.X)
 
         # ttk.Button(self, text="Add Expense", command=self.submit).pack(pady=10)
