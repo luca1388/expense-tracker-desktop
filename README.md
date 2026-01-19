@@ -27,6 +27,32 @@ Offline-first desktop application to track personal and recurring expenses, with
 - Python 3.11+
 - pip (Python package manager)
 
+### Project structure
+
+```expense-tracker-desktop/
+├─ data/
+│  └─ expenses.db
+├─ domain/
+│  ├─ models.py
+├─ persistence/
+│  ├─ category_repository.py
+│  ├─ expense_repository.py
+│  ├─ db.py
+│  └─ recurring_expense_repository.py
+├─ resources/
+│  ├─ default_categories.json
+├─ services/
+│   ├─ category_service.py
+│   ├─ expense_service.py
+│   └─ recurring_expense_service.py
+└─ ui/
+    ├─ app.py
+    ├─ expense_form.py
+    ├─ expense_list.py
+    ├─ month_selector.py
+    └─ toolbar.py
+```
+
 ### Installation
 
 1. Clone the repository:
