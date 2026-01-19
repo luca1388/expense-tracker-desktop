@@ -37,12 +37,14 @@ class ToolbarFrame(ttk.Frame):
         on_month_changed,
         on_edit_expense_requested=None,
         on_delete_expense_requested=None,
+        on_add_expense_requested=None,
     ):
         super().__init__(parent, padding=5)
 
         self.on_month_changed = on_month_changed
         self.on_edit_expense_requested = on_edit_expense_requested
         self.on_delete_expense_requested = on_delete_expense_requested
+        self.on_add_expense_requested = on_add_expense_requested
 
         today = date.today()
         self.year_var = tk.IntVar(value=today.year)
@@ -81,17 +83,17 @@ class ToolbarFrame(ttk.Frame):
             width=10,
             textvariable=self.month_var,
             state="readonly",
-        ).pack(side=tk.LEFT)
+        ).pack(side=tk.LEFT, padx=5)
 
         self.month_var.trace_add("write", self._on_month_var_changed)
 
         ttk.Button(filter_container, text="<", width=3, command=self._prev_month).pack(
-            side=tk.LEFT
+            side=tk.LEFT, padx=5
         )
 
         ttk.Button(
             filter_container, text="Mese corrente", command=self._current_month
-        ).pack(side=tk.LEFT)
+        ).pack(side=tk.LEFT, padx=5)
 
         ttk.Button(filter_container, text=">", width=3, command=self._next_month).pack(
             side=tk.LEFT, padx=5
@@ -100,6 +102,13 @@ class ToolbarFrame(ttk.Frame):
         # --- MIDDLE: Action buttons
         action_frame = ttk.Frame(self)
         action_frame.pack(side=tk.RIGHT, padx=20)
+
+        self.add_button = ttk.Button(
+            action_frame,
+            text="Nuova spesa",
+            command=self.on_add_expense_requested,
+        )
+        self.add_button.pack(side=tk.LEFT, padx=(0, 10))
 
         self.edit_button = ttk.Button(
             action_frame,

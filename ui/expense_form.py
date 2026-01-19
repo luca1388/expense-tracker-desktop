@@ -48,9 +48,14 @@ class ExpenseFormFrame(ttk.Frame):
         ttk.Label(self, text="Description").pack(anchor="w")
         ttk.Entry(self, textvariable=self.desc_var).pack(fill=tk.X)
 
-        ttk.Button(self, text="Add Expense", command=self._submit).pack(pady=10)
+        # ttk.Button(self, text="Add Expense", command=self.submit).pack(pady=10)
 
-    def _submit(self):
+    def submit(self):
+        """
+        Docstring for submit
+
+        :param self: Description
+        """
         validation_error = self._validate_form()
         if validation_error:
             messagebox.showerror("Validation Error", validation_error)
@@ -68,12 +73,13 @@ class ExpenseFormFrame(ttk.Frame):
                 analysis_data=None,
                 analysis_summary=None,
             )
-            self.on_expense_added()
 
             self.amount_var.set("")
             self.desc_var.set("")
             self.category_cb.current(0)
             messagebox.showinfo("Success", "Expense added successfully!")
+
+            self.on_expense_added()
 
         except ValueError as e:
             messagebox.showerror("Error", f"Failed to add expense: {str(e)}")

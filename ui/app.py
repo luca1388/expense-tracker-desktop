@@ -10,11 +10,13 @@ from tkinter import messagebox
 from persistence.expense_repository import ExpenseRepository
 from persistence.category_repository import CategoryRepository
 
+from services import category_service
 from services.category_service import CategoryService
 from services.expense_service import ExpenseService
 from ui.expense_list import ExpenseListFrame
 from ui.toolbar import ToolbarFrame
 from ui.expense_form import ExpenseFormFrame
+from ui.add_expense_modal import AddExpenseModal
 from utils.dates import month_date_range
 
 
@@ -45,6 +47,7 @@ class ExpenseTrackerApp(tk.Tk):
             on_month_changed=self._on_month_changed,
             on_edit_expense_requested=self._on_edit_expense_requested,
             on_delete_expense_requested=self._on_delete_expense_requested,
+            on_add_expense_requested=self._on_add_expense_requested,
         )
         self.toolbar.pack(fill=tk.X)
 
@@ -60,26 +63,20 @@ class ExpenseTrackerApp(tk.Tk):
         )
         self.expense_list.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
 
-        # Right: Add expense form
-        self.expense_form = ExpenseFormFrame(
-            content_frame,
-            expense_service=self.expense_service,
-            category_service=self.category_service,
-            on_expense_added=self._on_expense_added,
-        )
-        self.expense_form.pack(side=tk.RIGHT, fill=tk.Y)
-
         self._on_month_changed(
             self.toolbar.year_var.get(), self.toolbar.get_selected_month_number()
         )
 
-    def _on_expense_added(self):
+    def _on_expense_added(self, modal):
         """Refresh the expense list with the currently selected month after adding an expense."""
+
         start_date, end_date = month_date_range(
             self.toolbar.year_var.get(), self.toolbar.get_selected_month_number()
         )
         self.expense_list.refresh(start_date=start_date, end_date=end_date)
         self.toolbar.disable_actions()
+
+        modal.destroy()
 
     def _on_month_changed(self, year: int, month: int):
         """Callback triggered when the month selection changes."""
@@ -99,7 +96,16 @@ class ExpenseTrackerApp(tk.Tk):
 
     def _on_edit_expense_requested(self):
         """Handle edit button click."""
-        # TODO: Implement edit functionality
+        pass
+
+    def _on_add_expense_requested(self):
+        """Handle add expense action from the toolbar."""
+        AddExpenseModal(
+            self,
+            expense_service=self.expense_service,
+            category_service=self.category_service,
+            on_expense_added=self._on_expense_added,
+        )
 
     def _on_delete_expense_requested(self):
         """
