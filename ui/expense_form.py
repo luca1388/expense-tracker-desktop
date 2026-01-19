@@ -6,8 +6,6 @@ import tkinter as tk
 from tkinter import ttk, messagebox
 from datetime import date
 
-from domain.models import Expense
-
 
 class ExpenseFormFrame(ttk.Frame):
     """
@@ -15,11 +13,11 @@ class ExpenseFormFrame(ttk.Frame):
     Frame to add a new expense.
     """
 
-    def __init__(self, parent, expense_repo, category_repo, on_expense_added):
+    def __init__(self, parent, expense_service, category_service, on_expense_added):
         super().__init__(parent, padding=10)
 
-        self.expense_repo = expense_repo
-        self.category_repo = category_repo
+        self.expense_service = expense_service
+        self.category_service = category_service
         self.on_expense_added = on_expense_added
 
         self._build_ui()
@@ -31,7 +29,7 @@ class ExpenseFormFrame(ttk.Frame):
         self.amount_var = tk.StringVar()
         self.desc_var = tk.StringVar()
 
-        categories = self.category_repo.get_all()
+        categories = self.category_service.get_all_categories()
         self.categories = {c.name: c.id for c in categories}
 
         ttk.Label(self, text="Date (YYYY-MM-DD)").pack(anchor="w")
@@ -59,10 +57,8 @@ class ExpenseFormFrame(ttk.Frame):
             return
 
         try:
-            exp = Expense(
-                id=None,
-                created_at=date.fromisoformat(self.date_var.get()),
-                date=date.fromisoformat(self.date_var.get()),
+            self.expense_service.create_expense(
+                date_=date.fromisoformat(self.date_var.get()),
                 amount=float(self.amount_var.get()),
                 category_id=self.categories[self.category_cb.get()],
                 description=self.desc_var.get(),
@@ -72,8 +68,6 @@ class ExpenseFormFrame(ttk.Frame):
                 analysis_data=None,
                 analysis_summary=None,
             )
-
-            self.expense_repo.add(exp)
             self.on_expense_added()
 
             self.amount_var.set("")

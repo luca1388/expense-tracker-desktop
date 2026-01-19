@@ -16,16 +16,16 @@ class ExpenseListFrame(ttk.Frame):
     def __init__(
         self,
         parent,
-        expense_repo,
+        expense_service,
         on_selection_changed=None,
     ):
         super().__init__(parent)
-        self.expense_repo = expense_repo
+        self.expense_service = expense_service
         self.on_selection_changed = on_selection_changed
 
         self._build_ui()
         # Improvement: insert the current month expenses by default
-        self.refresh(start_date=None, end_date=None)
+        # self.refresh(start_date=None, end_date=None)
 
     def _build_ui(self):
         # Header frame with title and total
@@ -74,9 +74,11 @@ class ExpenseListFrame(ttk.Frame):
 
         total = 0.0
         if not start_date or not end_date:
-            expenses = self.expense_repo.get_all()
+            expenses = self.expense_service.get_all_expenses()
         else:
-            expenses = self.expense_repo.get_by_period(start_date, end_date)
+            expenses = self.expense_service.get_expenses_for_period(
+                start_date, end_date
+            )
 
         for exp in expenses:
             total += exp.amount

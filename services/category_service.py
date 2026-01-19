@@ -58,3 +58,12 @@ class CategoryService:
                     is_custom=False,
                 )
                 self._repository.add(category)
+
+    def get_all_categories(self) -> list[Category]:
+        """
+        Retrieves all categories from the repository.
+
+        Returns:
+            list[Category]: List of all categories.
+        """
+        return self._repository.get_all()

@@ -10,6 +10,8 @@ from tkinter import messagebox
 from persistence.expense_repository import ExpenseRepository
 from persistence.category_repository import CategoryRepository
 
+from services.category_service import CategoryService
+from services.expense_service import ExpenseService
 from ui.expense_list import ExpenseListFrame
 from ui.toolbar import ToolbarFrame
 from ui.expense_form import ExpenseFormFrame
@@ -28,8 +30,8 @@ class ExpenseTrackerApp(tk.Tk):
         self.geometry("900x500")
 
         # Repositories
-        self.expense_repo = ExpenseRepository()
-        self.category_repo = CategoryRepository()
+        self.expense_service = ExpenseService(ExpenseRepository())
+        self.category_service = CategoryService(CategoryRepository())
 
         self._build_ui()
 
@@ -53,7 +55,7 @@ class ExpenseTrackerApp(tk.Tk):
         # Left: Expense list
         self.expense_list = ExpenseListFrame(
             content_frame,
-            expense_repo=self.expense_repo,
+            expense_service=self.expense_service,
             on_selection_changed=self._on_expense_selection_changed,
         )
         self.expense_list.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
@@ -61,8 +63,8 @@ class ExpenseTrackerApp(tk.Tk):
         # Right: Add expense form
         self.expense_form = ExpenseFormFrame(
             content_frame,
-            expense_repo=self.expense_repo,
-            category_repo=self.category_repo,
+            expense_service=self.expense_service,
+            category_service=self.category_service,
             on_expense_added=self._on_expense_added,
         )
         self.expense_form.pack(side=tk.RIGHT, fill=tk.Y)
@@ -98,12 +100,6 @@ class ExpenseTrackerApp(tk.Tk):
     def _on_edit_expense_requested(self):
         """Handle edit button click."""
         # TODO: Implement edit functionality
-        pass
-
-    def _on_delete_expense_requested(self):
-        """Handle delete button click."""
-        # TODO: Implement delete functionality
-        pass
 
     def _on_delete_expense_requested(self):
         """
@@ -120,7 +116,7 @@ class ExpenseTrackerApp(tk.Tk):
         if not confirmed:
             return
 
-        self.expense_repo.delete(expense_id)
+        self.expense_service.delete_expense(expense_id)
 
         # Refresh current month
         year = self.toolbar.year_var.get()

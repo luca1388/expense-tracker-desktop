@@ -85,3 +85,13 @@ class ExpenseService:
         """
         if amount <= 0:
             raise ValueError("Expense amount must be greater than zero")
+
+    def delete_expense(self, expense_id: int) -> None:
+        """
+        Deletes an expense by its ID.
+
+        Args:
+            expense_id (int): ID of the expense to delete
+        """
+        # Qui potresti aggiungere future logiche, es. soft delete o validazioni
+        self._repository.delete(expense_id)
