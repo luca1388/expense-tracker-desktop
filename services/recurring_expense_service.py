@@ -1,6 +1,6 @@
-from calendar import monthrange
 from datetime import date, datetime
 from typing import List
+from dateutil.relativedelta import relativedelta
 
 from domain.models import RecurringExpense, RecurrenceFrequency
 from domain.models import Expense
@@ -98,27 +98,15 @@ class RecurringExpenseService:
         Calculates the next occurrence date based on the recurrence frequency.
         """
         if frequency == RecurrenceFrequency.MONTHLY:
-            return self._add_month(current_date)
+            return current_date + relativedelta(months=1)
+
+        if frequency == RecurrenceFrequency.EVERY_2_MONTHS:
+            return current_date + relativedelta(months=2)
+
+        if frequency == RecurrenceFrequency.EVERY_6_MONTHS:
+            return current_date + relativedelta(months=6)
 
         if frequency == RecurrenceFrequency.YEARLY:
-            return date(current_date.year + 1, current_date.month, current_date.day)
+            return current_date + relativedelta(years=1)
 
         raise ValueError(f"Unsupported frequency: {frequency}")
-
-    def _add_month(self, current_date: date) -> date:
-        """
-        Adds one month to a date, keeping the day when possible.
-        """
-        year = current_date.year
-        month = current_date.month + 1
-
-        if month > 12:
-            month = 1
-            year += 1
-
-        day = min(
-            current_date.day,
-            monthrange(year, month)[1],
-        )
-
-        return date(year, month, day)
