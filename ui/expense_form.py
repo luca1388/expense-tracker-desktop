@@ -20,9 +20,14 @@ class ExpenseFormFrame(ttk.Frame):
         self.category_service = category_service
         self.on_expense_added = on_expense_added
 
+        self._configure_styles()
+
         self._build_ui()
 
     def _build_ui(self):
+        # Configure parent frame to expand
+        self.rowconfigure(0, weight=1)
+        self.columnconfigure(0, weight=1)
 
         form = ttk.Frame(self)
         form.grid(row=0, column=0, sticky="nsew")
@@ -45,10 +50,15 @@ class ExpenseFormFrame(ttk.Frame):
         self.amount_entry = ttk.Entry(form, textvariable=self.amount_var)
         self.description_entry = ttk.Entry(form, textvariable=self.desc_var)
 
-        self._add_row(form, 0, "Data", self.date_entry)
-        self._add_row(form, 1, "Importo", self.amount_entry)
-        self._add_row(form, 2, "Category", self.category_combo)
-        self._add_row(form, 3, "Descrizione", self.description_entry)
+        self.date_error = ttk.Label(form, text="", foreground="red")
+        self.amount_error = ttk.Label(form, text="", foreground="red")
+        self.category_error = ttk.Label(form, text="", foreground="red")
+        self.desc_error = ttk.Label(form, text="", foreground="red")
+
+        self._add_row(form, 0, "Data", self.date_entry, self.date_error)
+        self._add_row(form, 1, "Importo", self.amount_entry, self.amount_error)
+        self._add_row(form, 2, "Category", self.category_combo, self.category_error)
+        self._add_row(form, 3, "Descrizione", self.description_entry, self.desc_error)
 
     def submit(self):
         """
@@ -56,9 +66,8 @@ class ExpenseFormFrame(ttk.Frame):
 
         :param self: Description
         """
-        validation_error = self._validate_form()
-        if validation_error:
-            messagebox.showerror("Validation Error", validation_error)
+
+        if not self._validate_form():
             return
 
         try:
@@ -77,51 +86,76 @@ class ExpenseFormFrame(ttk.Frame):
             self.amount_var.set("")
             self.desc_var.set("")
             self.category_combo.current(0)
-            messagebox.showinfo("Success", "Expense added successfully!")
+            self._clear_errors()
+
+            # messagebox.showinfo("Success", "Expense added successfully!")
 
             self.on_expense_added()
 
         except ValueError as e:
-            messagebox.showerror("Error", f"Failed to add expense: {str(e)}")
+            messagebox.showerror("Error", f"Impossibile aggiungere la spesa: {str(e)}")
 
     def _validate_form(self):
-        """Validate all form fields. Returns error message if validation fails, None otherwise."""
+        self._clear_errors()
+        valid = True
 
-        # Validate date
-        date_str = self.date_var.get().strip()
-        if not date_str:
-            return "Date cannot be empty."
+        # Date
         try:
-            date.fromisoformat(date_str)
+            date.fromisoformat(self.date_var.get())
         except ValueError:
-            return "Invalid date format. Use YYYY-MM-DD (e.g., 2026-01-13)."
+            self.date_entry.configure(style="Error.TEntry")
+            self.date_error.config(text="Formato YYYY-MM-DD")
+            valid = False
 
-        # Validate amount
-        amount_str = self.amount_var.get().strip()
-        if not amount_str:
-            return "Amount cannot be empty."
+        # Amount
         try:
-            amount = float(amount_str)
-            if amount <= 0:
-                return "Amount must be a positive number."
+            if float(self.amount_var.get()) <= 0:
+                raise ValueError
         except ValueError:
-            return "Invalid amount. Please enter a valid number."
+            self.amount_entry.configure(style="Error.TEntry")
+            self.amount_error.config(text="Inserisci un importo valido")
+            valid = False
 
-        # Validate category
+        # Category
         if not self.category_combo.get():
-            return "Please select a category."
+            self.category_combo.configure(style="Error.TCombobox")
+            self.category_error.config(text="Seleziona una categoria")
+            valid = False
 
-        # Validate description
-        description = self.desc_var.get().strip()
-        if not description:
-            return "Description cannot be empty."
-        if len(description) > 100:
-            return "Description is too long (max 100 characters)."
+        # Description
+        desc = self.desc_var.get().strip()
+        if not desc:
+            self.description_entry.configure(style="Error.TEntry")
+            self.desc_error.config(text="Descrizione obbligatoria")
+            valid = False
+        elif len(desc) > 100:
+            self.description_entry.configure(style="Error.TEntry")
+            self.desc_error.config(text="Max 100 caratteri")
+            valid = False
 
-        return None
+        return valid
 
-    def _add_row(self, parent, row, label_text, widget):
+    def _add_row(self, parent, row, label_text, widget, error_label):
         label = ttk.Label(parent, text=label_text)
-        label.grid(row=row, column=0, sticky="w", padx=(0, 10), pady=6)
+        label.grid(row=row * 2, column=0, sticky="w", padx=(0, 10), pady=(6, 0))
 
-        widget.grid(row=row, column=1, sticky="ew", pady=6)
+        widget.grid(row=row * 2, column=1, sticky="ew", pady=(6, 0))
+
+        error_label.grid(row=row * 2 + 1, column=1, sticky="w", pady=(0, 4))
+
+    def _configure_styles(self):
+        style = ttk.Style()
+        style.configure("Error.TEntry", foreground="black")
+        style.configure("Error.TCombobox", foreground="black")
+
+    def _clear_errors(self):
+        widgets = [
+            (self.date_entry, self.date_error),
+            (self.amount_entry, self.amount_error),
+            (self.category_combo, self.category_error),
+            (self.description_entry, self.desc_error),
+        ]
+
+        for widget, error_label in widgets:
+            widget.configure(style="")
+            error_label.config(text="")

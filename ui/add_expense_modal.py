@@ -42,21 +42,22 @@ class AddExpenseModal(tk.Toplevel):
 
     def _position_modal(self, parent):
         """Position the modal window at the center of the screen."""
+        # Set explicit modal dimensions
+        modal_width = 400
+        modal_height = 300
+        self.geometry(f"{modal_width}x{modal_height}")
+
         self.update_idletasks()
 
         # Get screen dimensions
         screen_width = self.winfo_screenwidth()
         screen_height = self.winfo_screenheight()
 
-        # Get modal dimensions
-        modal_width = self.winfo_width()
-        modal_height = self.winfo_height()
-
         # Calculate center position
         x = (screen_width - modal_width) // 2
         y = (screen_height - modal_height) // 2
 
-        self.geometry(f"+{x}+{y}")
+        self.geometry(f"{modal_width}x{modal_height}+{x}+{y}")
 
     def _build_ui(self, expense_service, category_service, on_expense_added):
         """Build the modal UI with form and buttons."""
