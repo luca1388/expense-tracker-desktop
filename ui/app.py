@@ -10,12 +10,10 @@ from tkinter import messagebox
 from persistence.expense_repository import ExpenseRepository
 from persistence.category_repository import CategoryRepository
 
-from services import category_service
 from services.category_service import CategoryService
 from services.expense_service import ExpenseService
 from ui.expense_list import ExpenseListFrame
 from ui.toolbar import ToolbarFrame
-from ui.expense_form import ExpenseFormFrame
 from ui.add_expense_modal import AddExpenseModal
 from utils.dates import month_date_range
 
