@@ -111,7 +111,7 @@ class ToolbarFrame(ttk.Frame):
             text="Nuova spesa",
             command=self.on_add_expense_requested,
         )
-        self.add_button.pack(side=tk.LEFT, padx=(0, 10))
+        self.add_button.pack(side=tk.LEFT, padx=(5, 0))
 
         self.edit_button = ttk.Button(
             actions_container,
@@ -127,7 +127,7 @@ class ToolbarFrame(ttk.Frame):
             command=self.on_delete_expense_requested,
             state=tk.DISABLED,
         )
-        self.delete_button.pack(side=tk.LEFT)
+        self.delete_button.pack(side=tk.LEFT, padx=(0, 5))
 
     def get_selected_month_number(self) -> int:
         """Returns the currently selected month number."""
