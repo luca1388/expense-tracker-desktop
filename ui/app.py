@@ -10,8 +10,10 @@ from tkinter import messagebox
 from persistence.expense_repository import ExpenseRepository
 from persistence.category_repository import CategoryRepository
 
+from persistence.recurring_expense_repository import RecurringExpenseRepository
 from services.category_service import CategoryService
 from services.expense_service import ExpenseService
+from services.recurring_expense_service import RecurringExpenseService
 from ui.expense_list import ExpenseListFrame
 from ui.toolbar import ToolbarFrame
 from ui.add_expense_modal import AddExpenseModal
@@ -29,9 +31,15 @@ class ExpenseTrackerApp(tk.Tk):
         self.title("Expense Tracker")
         self.geometry("900x500")
 
+        expense_repository = ExpenseRepository()
+
         # Repositories
-        self.expense_service = ExpenseService(ExpenseRepository())
+        self.expense_service = ExpenseService(expense_repository)
         self.category_service = CategoryService(CategoryRepository())
+        self.recurring_expense_repo = RecurringExpenseRepository()
+        self.recurring_expense_service = RecurringExpenseService(
+            self.recurring_expense_repo, expense_repository
+        )
 
         self._build_ui()
 
@@ -102,6 +110,7 @@ class ExpenseTrackerApp(tk.Tk):
             self,
             expense_service=self.expense_service,
             category_service=self.category_service,
+            recurring_expense_service=self.recurring_expense_service,
             on_expense_added=self._on_expense_added,
         )
 

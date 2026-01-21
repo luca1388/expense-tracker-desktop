@@ -45,6 +45,8 @@ class RecurrenceFrequency(Enum):
 
     MONTHLY = "monthly"
     EVERY_2_MONTHS = "every_2_months"
+    EVERY_3_MONTHS = "every_3_months"
+    EVERY_4_MONTHS = "every_4_months"
     EVERY_6_MONTHS = "every_6_months"
     YEARLY = "yearly"
 

@@ -6,6 +6,8 @@ import tkinter as tk
 from tkinter import ttk, messagebox
 from datetime import date
 
+from domain.models import RecurrenceFrequency
+
 
 class ExpenseFormFrame(ttk.Frame):
     """
@@ -13,11 +15,19 @@ class ExpenseFormFrame(ttk.Frame):
     Frame to add a new expense.
     """
 
-    def __init__(self, parent, expense_service, category_service, on_expense_added):
+    def __init__(
+        self,
+        parent,
+        expense_service,
+        category_service,
+        recurring_expense_service,
+        on_expense_added,
+    ):
         super().__init__(parent, padding=10)
 
         self.expense_service = expense_service
         self.category_service = category_service
+        self.recurring_expense_service = recurring_expense_service
         self.on_expense_added = on_expense_added
 
         self._configure_styles()
@@ -38,8 +48,12 @@ class ExpenseFormFrame(ttk.Frame):
         self.date_var = tk.StringVar(value=date.today().isoformat())
         self.amount_var = tk.StringVar()
         self.desc_var = tk.StringVar()
+
         categories = self.category_service.get_all_categories()
         self.categories = {c.name: c.id for c in categories}
+
+        self.is_recurring_var = tk.BooleanVar(value=False)
+        self.frequency_var = tk.StringVar(value="Spesa singola")
 
         self.category_combo = ttk.Combobox(
             form, values=list(self.categories.keys()), state="readonly"
@@ -60,6 +74,15 @@ class ExpenseFormFrame(ttk.Frame):
         self._add_row(form, 2, "Category", self.category_combo, self.category_error)
         self._add_row(form, 3, "Descrizione", self.description_entry, self.desc_error)
 
+        self.frequency_combo = ttk.Combobox(
+            form,
+            textvariable=self.frequency_var,
+            values=[FREQUENCY_ENUM[key] for key in FREQUENCY_ENUM],
+            state="readonly",
+        )
+
+        self._add_row(form, 4, "Frequenza spesa", self.frequency_combo)
+
     def submit(self):
         """
         Docstring for submit
@@ -70,18 +93,37 @@ class ExpenseFormFrame(ttk.Frame):
         if not self._validate_form():
             return
 
+        is_recurring = self.frequency_var.get() != "Spesa singola"
+
         try:
             self.expense_service.create_expense(
                 date_=date.fromisoformat(self.date_var.get()),
                 amount=float(self.amount_var.get()),
                 category_id=self.categories[self.category_combo.get()],
                 description=self.desc_var.get(),
-                is_recurring=False,
+                is_recurring=is_recurring,
                 attachment_path=None,
                 attachment_type=None,
                 analysis_data=None,
                 analysis_summary=None,
             )
+
+            if is_recurring:
+                print(f"category: {self.categories[self.category_combo.get()]}")
+                frequency_key = [
+                    key
+                    for key, value in FREQUENCY_ENUM.items()
+                    if value == self.frequency_var.get()
+                ][0]
+                self.recurring_expense_service.create_recurring_expense(
+                    name=self.desc_var.get(),
+                    amount=float(self.amount_var.get()),
+                    category_id=self.categories[self.category_combo.get()],
+                    frequency=frequency_key,
+                    description=self.desc_var.get(),
+                    attachment_path=None,
+                    attachment_type=None,
+                )
 
             self.amount_var.set("")
             self.desc_var.set("")
@@ -135,13 +177,14 @@ class ExpenseFormFrame(ttk.Frame):
 
         return valid
 
-    def _add_row(self, parent, row, label_text, widget, error_label):
+    def _add_row(self, parent, row, label_text, widget, error_label=None):
         label = ttk.Label(parent, text=label_text)
         label.grid(row=row * 2, column=0, sticky="w", padx=(0, 10), pady=(6, 0))
 
         widget.grid(row=row * 2, column=1, sticky="ew", pady=(6, 0))
 
-        error_label.grid(row=row * 2 + 1, column=1, sticky="w", pady=(0, 4))
+        if error_label:
+            error_label.grid(row=row * 2 + 1, column=1, sticky="w", pady=(0, 4))
 
     def _configure_styles(self):
         style = ttk.Style()
@@ -159,3 +202,14 @@ class ExpenseFormFrame(ttk.Frame):
         for widget, error_label in widgets:
             widget.configure(style="")
             error_label.config(text="")
+
+
+FREQUENCY_ENUM = {
+    "single": "Spesa singola",
+    RecurrenceFrequency.MONTHLY: "Mensile",
+    RecurrenceFrequency.EVERY_2_MONTHS: "Bimestrale",
+    RecurrenceFrequency.EVERY_3_MONTHS: "Trimestrale",
+    RecurrenceFrequency.EVERY_4_MONTHS: "Quadrimestrale",
+    RecurrenceFrequency.EVERY_6_MONTHS: "Semestrale",
+    RecurrenceFrequency.YEARLY: "Annuale",
+}

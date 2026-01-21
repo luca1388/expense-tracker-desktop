@@ -1,3 +1,6 @@
+"""
+Service for managing recurring expenses."""
+
 from datetime import date, datetime
 from typing import List
 from dateutil.relativedelta import relativedelta
@@ -21,6 +24,38 @@ class RecurringExpenseService:
     ) -> None:
         self._recurring_repository = recurring_repository
         self._expense_repository = expense_repository
+
+    def create_recurring_expense(
+        self,
+        *,
+        name: str,
+        amount: float,
+        category_id: int,
+        frequency: RecurrenceFrequency,
+        description: str | None = None,
+        attachment_path: str | None = None,
+        attachment_type: str | None = None,
+    ) -> RecurringExpense:
+        """
+        Creates and persists a new RecurringExpense template.
+        Does NOT generate any Expense.
+        """
+        recurring = RecurringExpense(
+            id=None,
+            name=name,
+            amount=amount,
+            category_id=category_id,
+            frequency=frequency,
+            start_date=date.today(),
+            end_date=None,
+            description=description,
+            attachment_path=attachment_path,
+            attachment_type=attachment_type,
+            last_generated_date=None,
+            created_at=datetime.now(),
+        )
+
+        return self._recurring_repository.add(recurring)
 
     def generate_missing_expenses(self, up_to: date) -> List[Expense]:
         """
@@ -102,6 +137,12 @@ class RecurringExpenseService:
 
         if frequency == RecurrenceFrequency.EVERY_2_MONTHS:
             return current_date + relativedelta(months=2)
+
+        if frequency == RecurrenceFrequency.EVERY_3_MONTHS:
+            return current_date + relativedelta(months=3)
+
+        if frequency == RecurrenceFrequency.EVERY_4_MONTHS:
+            return current_date + relativedelta(months=4)
 
         if frequency == RecurrenceFrequency.EVERY_6_MONTHS:
             return current_date + relativedelta(months=6)

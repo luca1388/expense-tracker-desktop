@@ -15,7 +15,14 @@ class AddExpenseModal(tk.Toplevel):
     Encapsulates the modal creation, layout, and form handling.
     """
 
-    def __init__(self, parent, expense_service, category_service, on_expense_added):
+    def __init__(
+        self,
+        parent,
+        expense_service,
+        category_service,
+        recurring_expense_service,
+        on_expense_added,
+    ):
         """
         Initialize the add expense modal.
 
@@ -23,6 +30,7 @@ class AddExpenseModal(tk.Toplevel):
             parent: The parent window
             expense_service: Service for managing expenses
             category_service: Service for managing categories
+            recurring_expense_service: Service for managing recurring expenses
             on_expense_added: Callback function invoked when expense is successfully added
         """
         super().__init__(parent)
@@ -38,13 +46,18 @@ class AddExpenseModal(tk.Toplevel):
         self._position_modal(parent)
 
         # Build the modal UI
-        self._build_ui(expense_service, category_service, on_expense_added)
+        self._build_ui(
+            expense_service,
+            category_service,
+            recurring_expense_service,
+            on_expense_added,
+        )
 
     def _position_modal(self, parent):
         """Position the modal window at the center of the screen."""
         # Set explicit modal dimensions
         modal_width = 400
-        modal_height = 300
+        modal_height = 500
         self.geometry(f"{modal_width}x{modal_height}")
 
         self.update_idletasks()
@@ -59,7 +72,13 @@ class AddExpenseModal(tk.Toplevel):
 
         self.geometry(f"{modal_width}x{modal_height}+{x}+{y}")
 
-    def _build_ui(self, expense_service, category_service, on_expense_added):
+    def _build_ui(
+        self,
+        expense_service,
+        category_service,
+        recurring_expense_service,
+        on_expense_added,
+    ):
         """Build the modal UI with form and buttons."""
         # Content frame for the form
         content = ttk.Frame(self)
@@ -74,6 +93,7 @@ class AddExpenseModal(tk.Toplevel):
             content,
             expense_service=expense_service,
             category_service=category_service,
+            recurring_expense_service=recurring_expense_service,
             on_expense_added=lambda: on_expense_added(self),
         )
         form.pack(fill=tk.BOTH, padx=10, pady=10)
