@@ -7,8 +7,11 @@ from persistence.db import init_db
 from ui.app import ExpenseTrackerApp
 
 if __name__ == "__main__":
-    init_db()
-    load_base_categories()
+    try:
+        init_db()
+        load_base_categories()
 
-    app = ExpenseTrackerApp()
-    app.mainloop()
+        app = ExpenseTrackerApp()
+        app.mainloop()
+    except KeyboardInterrupt as e:
+        print("Application interrupted by user.")
