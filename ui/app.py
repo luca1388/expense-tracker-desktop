@@ -3,6 +3,7 @@ Docstring for ui.app
 Defines the main application window for the Expense Tracker desktop app.
 """
 
+from datetime import date
 import tkinter as tk
 from tkinter import ttk
 from tkinter import messagebox
@@ -40,6 +41,8 @@ class ExpenseTrackerApp(tk.Tk):
         self.recurring_expense_service = RecurringExpenseService(
             self.recurring_expense_repo, expense_repository
         )
+
+        self.recurring_expense_service.generate_missing_expenses(date.today())
 
         self._build_ui()
 

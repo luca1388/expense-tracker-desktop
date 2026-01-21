@@ -35,6 +35,7 @@ class RecurringExpenseService:
         description: str | None = None,
         attachment_path: str | None = None,
         attachment_type: str | None = None,
+        start_date: date | None = None,
     ) -> RecurringExpense:
         """
         Creates and persists a new RecurringExpense template.
@@ -46,7 +47,7 @@ class RecurringExpenseService:
             amount=amount,
             category_id=category_id,
             frequency=frequency,
-            start_date=date.today(),
+            start_date=start_date or date.today(),
             end_date=None,
             description=description,
             attachment_path=attachment_path,

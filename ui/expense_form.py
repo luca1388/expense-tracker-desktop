@@ -96,18 +96,6 @@ class ExpenseFormFrame(ttk.Frame):
         is_recurring = self.frequency_var.get() != "Spesa singola"
 
         try:
-            self.expense_service.create_expense(
-                date_=date.fromisoformat(self.date_var.get()),
-                amount=float(self.amount_var.get()),
-                category_id=self.categories[self.category_combo.get()],
-                description=self.desc_var.get(),
-                is_recurring=is_recurring,
-                attachment_path=None,
-                attachment_type=None,
-                analysis_data=None,
-                analysis_summary=None,
-            )
-
             if is_recurring:
                 print(f"category: {self.categories[self.category_combo.get()]}")
                 frequency_key = [
@@ -123,6 +111,20 @@ class ExpenseFormFrame(ttk.Frame):
                     description=self.desc_var.get(),
                     attachment_path=None,
                     attachment_type=None,
+                    start_date=date.fromisoformat(self.date_var.get()),
+                )
+            else:
+                # Single expense: create it directly
+                self.expense_service.create_expense(
+                    date_=date.fromisoformat(self.date_var.get()),
+                    amount=float(self.amount_var.get()),
+                    category_id=self.categories[self.category_combo.get()],
+                    description=self.desc_var.get(),
+                    is_recurring=is_recurring,
+                    attachment_path=None,
+                    attachment_type=None,
+                    analysis_data=None,
+                    analysis_summary=None,
                 )
 
             self.amount_var.set("")
@@ -131,6 +133,8 @@ class ExpenseFormFrame(ttk.Frame):
             self._clear_errors()
 
             # messagebox.showinfo("Success", "Expense added successfully!")
+
+            self.recurring_expense_service.generate_missing_expenses(date.today())
 
             self.on_expense_added()
 
