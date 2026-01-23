@@ -58,6 +58,20 @@ class RecurringExpenseService:
 
         return self._recurring_repository.add(recurring)
 
+    def get_recurring_expense_by_id(
+        self, recurring_expense_id: int
+    ) -> RecurringExpense | None:
+        """
+        Retrieves a recurring expense by its ID.
+
+        Args:
+            recurring_expense_id (int): The ID of the recurring expense
+
+        Returns:
+            RecurringExpense | None: The recurring expense if found, None otherwise
+        """
+        return self._recurring_repository.get_by_id(recurring_expense_id)
+
     def generate_missing_expenses(self, up_to: date) -> List[Expense]:
         """
         Generates all missing expenses for recurring expenses up to a given date.
@@ -96,6 +110,7 @@ class RecurringExpenseService:
                 category_id=recurring.category_id,
                 description=recurring.description,
                 is_recurring=True,
+                recurring_expense_id=recurring.id,
                 attachment_path=recurring.attachment_path,
                 attachment_type=recurring.attachment_type,
                 analysis_data=None,

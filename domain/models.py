@@ -28,6 +28,7 @@ class Expense:
     description: Optional[str]
 
     is_recurring: bool
+    recurring_expense_id: Optional[int]
 
     attachment_path: Optional[str]
     attachment_type: Optional[str]

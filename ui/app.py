@@ -69,6 +69,7 @@ class ExpenseTrackerApp(tk.Tk):
             content_frame,
             expense_service=self.expense_service,
             on_selection_changed=self._on_expense_selection_changed,
+            recurring_expense_service=self.recurring_expense_service,
         )
         self.expense_list.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
 

@@ -37,14 +37,15 @@ class ExpenseRepository:
                     amount,
                     category_id,
                     description,
-                    is_recurring,
+                    is_recurring,        
                     attachment_path,
                     attachment_type,
                     analysis_data,
                     analysis_summary,
-                    created_at
+                    created_at,
+                    recurring_expense_id
                 )
-                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
                 """,
                 (
                     expense.date.isoformat(),
@@ -57,6 +58,7 @@ class ExpenseRepository:
                     expense.analysis_data,
                     expense.analysis_summary,
                     expense.created_at.isoformat(),
+                    expense.recurring_expense_id,
                 ),
             )
 
@@ -130,6 +132,7 @@ class ExpenseRepository:
             analysis_data=row[8],
             analysis_summary=row[9],
             created_at=datetime.fromisoformat(row[10]),
+            recurring_expense_id=row[11],
         )
 
     def delete(self, expense_id: int) -> None:

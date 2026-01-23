@@ -5,6 +5,7 @@ Defines the ExpenseListFrame for displaying a list of expenses.
 
 import tkinter as tk
 from tkinter import ttk
+from utils.frequency_constants import FREQUENCY_LABELS
 
 
 class ExpenseListFrame(ttk.Frame):
@@ -17,10 +18,12 @@ class ExpenseListFrame(ttk.Frame):
         self,
         parent,
         expense_service,
+        recurring_expense_service=None,
         on_selection_changed=None,
     ):
         super().__init__(parent)
         self.expense_service = expense_service
+        self.recurring_expense_service = recurring_expense_service
         self.on_selection_changed = on_selection_changed
 
         self._build_ui()
@@ -41,7 +44,7 @@ class ExpenseListFrame(ttk.Frame):
         )
         self.total_label.pack(side=tk.RIGHT)
 
-        columns = ("id", "data", "importo", "categoria", "descrizione")
+        columns = ("id", "data", "importo", "categoria", "descrizione", "frequenza")
 
         self.tree = ttk.Treeview(
             self,
@@ -50,17 +53,21 @@ class ExpenseListFrame(ttk.Frame):
             selectmode="browse",
         )
 
+        self.tree.tag_configure("recurring", background="#F5FAFF")
+
         self.tree.heading("id", text="ID")
         self.tree.heading("data", text="Data")
         self.tree.heading("importo", text="Importo")
         self.tree.heading("categoria", text="Categoria")
         self.tree.heading("descrizione", text="Descrizione")
+        self.tree.heading("frequenza", text="Frequenza")
 
         self.tree.column("id", width=0)
         self.tree.column("data", width=90)
         self.tree.column("importo", width=80, anchor="e")
         self.tree.column("categoria", width=120)
         self.tree.column("descrizione", width=250)
+        self.tree.column("frequenza", width=120)
 
         # Enable / disable buttons based on selection
         self.tree.bind("<<TreeviewSelect>>", self._on_selection_changed)
@@ -82,6 +89,18 @@ class ExpenseListFrame(ttk.Frame):
 
         for exp in expenses:
             total += exp.amount
+
+            # Get frequency if this is a recurring expense
+            frequency_display = "-"
+            if exp.recurring_expense_id:
+
+                # Fetch the recurring expense to get its frequency
+                recurring = self.recurring_expense_service.get_recurring_expense_by_id(
+                    exp.recurring_expense_id
+                )
+                if recurring:
+                    frequency_display = FREQUENCY_LABELS.get(recurring.frequency, "")
+
             self.tree.insert(
                 "",
                 tk.END,
@@ -91,7 +110,9 @@ class ExpenseListFrame(ttk.Frame):
                     f"{exp.amount:.2f}",
                     exp.category_id,  # miglioreremo con join o cache
                     exp.description or "",
+                    frequency_display,
                 ),
+                tags=("recurring",) if exp.recurring_expense_id else (),
             )
 
         self.total_label.config(text=f"Totale: € {total:.2f}")

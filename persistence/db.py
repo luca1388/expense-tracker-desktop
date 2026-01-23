@@ -38,33 +38,6 @@ def init_db():
         """
         )
 
-        # Tabella spese
-        cursor.execute(
-            """
-        CREATE TABLE IF NOT EXISTS expenses (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-
-            date TEXT NOT NULL,
-            amount REAL NOT NULL,
-
-            category_id INTEGER NOT NULL,
-            description TEXT,
-
-            is_recurring INTEGER NOT NULL DEFAULT 0,
-
-            attachment_path TEXT,
-            attachment_type TEXT,
-            
-            analysis_data TEXT,
-            analysis_summary TEXT,
-
-            created_at TEXT NOT NULL,
-
-            FOREIGN KEY (category_id) REFERENCES categories(id)
-        )
-        """
-        )
-
         # Recurring expenses table
         cursor.execute(
             """
@@ -93,6 +66,43 @@ def init_db():
             FOREIGN KEY (category_id) REFERENCES categories(id)
         )
         """
+        )
+
+        # Tabella spese
+        cursor.execute(
+            """
+        CREATE TABLE IF NOT EXISTS expenses (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+
+            date TEXT NOT NULL,
+            amount REAL NOT NULL,
+
+            category_id INTEGER NOT NULL,
+            description TEXT,
+
+            is_recurring INTEGER NOT NULL DEFAULT 0,
+
+            attachment_path TEXT,
+            attachment_type TEXT,
+            
+            analysis_data TEXT,
+            analysis_summary TEXT,
+
+            created_at TEXT NOT NULL,
+            
+            recurring_expense_id INTEGER,
+
+            FOREIGN KEY (category_id) REFERENCES categories(id)
+            FOREIGN KEY (recurring_expense_id) REFERENCES recurring_expenses(id)
+        )
+        """
+        )
+
+        cursor.execute(
+            """
+            CREATE INDEX IF NOT EXISTS idx_expenses_recurring_id
+ON expenses(recurring_expense_id);
+            """
         )
 
         conn.commit()

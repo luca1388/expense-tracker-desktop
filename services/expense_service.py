@@ -56,6 +56,7 @@ class ExpenseService:
             analysis_data=analysis_data,
             analysis_summary=analysis_summary,
             created_at=datetime.now(),
+            recurring_expense_id=None,
         )
 
         return self._repository.add(expense)

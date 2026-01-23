@@ -6,7 +6,7 @@ import tkinter as tk
 from tkinter import ttk, messagebox
 from datetime import date
 
-from domain.models import RecurrenceFrequency
+from utils.frequency_constants import FREQUENCY_FORM_OPTIONS
 
 
 class ExpenseFormFrame(ttk.Frame):
@@ -77,7 +77,7 @@ class ExpenseFormFrame(ttk.Frame):
         self.frequency_combo = ttk.Combobox(
             form,
             textvariable=self.frequency_var,
-            values=[FREQUENCY_ENUM[key] for key in FREQUENCY_ENUM],
+            values=[FREQUENCY_FORM_OPTIONS[key] for key in FREQUENCY_FORM_OPTIONS],
             state="readonly",
         )
 
@@ -100,7 +100,7 @@ class ExpenseFormFrame(ttk.Frame):
                 print(f"category: {self.categories[self.category_combo.get()]}")
                 frequency_key = [
                     key
-                    for key, value in FREQUENCY_ENUM.items()
+                    for key, value in FREQUENCY_FORM_OPTIONS.items()
                     if value == self.frequency_var.get()
                 ][0]
                 self.recurring_expense_service.create_recurring_expense(
@@ -206,14 +206,3 @@ class ExpenseFormFrame(ttk.Frame):
         for widget, error_label in widgets:
             widget.configure(style="")
             error_label.config(text="")
-
-
-FREQUENCY_ENUM = {
-    "single": "Spesa singola",
-    RecurrenceFrequency.MONTHLY: "Mensile",
-    RecurrenceFrequency.EVERY_2_MONTHS: "Bimestrale",
-    RecurrenceFrequency.EVERY_3_MONTHS: "Trimestrale",
-    RecurrenceFrequency.EVERY_4_MONTHS: "Quadrimestrale",
-    RecurrenceFrequency.EVERY_6_MONTHS: "Semestrale",
-    RecurrenceFrequency.YEARLY: "Annuale",
-}
