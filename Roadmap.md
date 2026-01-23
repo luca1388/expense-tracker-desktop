@@ -35,6 +35,7 @@
 ### 2.3 Actions toolbar
 
 - [ ] Valutare se rimuovere la actions toolbar e invece implementare le azioni con un menu contestuale che appare con click tasto destro sulla riga
+- [ ] Delete di una recurring expense
 
 ---
 
@@ -85,3 +86,14 @@
 - [ ] Migliorare allineamenti e spaziature
 - [ ] Migliore leggibilità tabella
 - [ ] Stati hover / selected più chiari
+
+## 🔹 FASE 8 – Versione 2 dell'app: AI support
+
+- [ ] Possibilità di allegare con le spese un file pdf
+- [ ] Un modello LOCALE di AI analizza il documento e ne estrae informazioni rilevanti
+  - LLM embedded nell'app in modo che i dati personali dell'utente non sono analizzati da LLM remote di terze parti (privacy first)
+  - Valutare Olama
+- [ ] Possibilità di importare le spese non solo a mano, ma leggere una cartella contenente files PDF.
+  - L'app analizza i documenti e crea (suggerisce) in automatico delle spese leggendo importo e data dal documento (bollette)
+  - L'utente deve solo confermare che le spese suggerite si possono inserire riducendo il lavoro manuale
+  - Reconciliation: se una spesa era già aggiunta a mano e risulta anche in un documento (estratto conto banca) bisogna fare un merge o comunque non duplicare la spesa

@@ -38,6 +38,7 @@ Offline-first desktop application to track personal and recurring expenses, with
 │  ├─ category_repository.py
 │  ├─ expense_repository.py
 │  ├─ db.py
+│  ├─ db_migrations.py
 │  └─ recurring_expense_repository.py
 ├─ resources/
 │  ├─ default_categories.json
@@ -45,12 +46,15 @@ Offline-first desktop application to track personal and recurring expenses, with
 │   ├─ category_service.py
 │   ├─ expense_service.py
 │   └─ recurring_expense_service.py
-└─ ui/
-    ├─ app.py
-    ├─ expense_form.py
-    ├─ expense_list.py
-    ├─ month_selector.py
-    └─ toolbar.py
+├─ ui/
+│   ├─ app.py
+│   ├─ expense_form.py
+│   ├─ expense_list.py
+│   ├─ month_selector.py
+│   ├─ add_expense_modal.py
+│   └─ toolbar.py
+├─ main.py (playground)
+└─ main_ui.py (entrypoint)
 ```
 
 ### Installation
