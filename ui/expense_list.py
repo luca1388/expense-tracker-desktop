@@ -118,11 +118,12 @@ class ExpenseListFrame(ttk.Frame):
         self.total_label.config(text=f"Totale: € {total:.2f}")
         return total
 
-    def _on_selection_changed(self):
+    def _on_selection_changed(self, _event) -> None:
         """Notify parent when selection changes."""
         has_selection = bool(self.tree.selection())
+        selected_id = self.get_selected_expense_id()
         if self.on_selection_changed:
-            self.on_selection_changed(has_selection)
+            self.on_selection_changed(selected_id if has_selection else None)
 
     def get_selected_expense_id(self) -> int | None:
         """

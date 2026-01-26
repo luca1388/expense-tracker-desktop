@@ -97,10 +97,15 @@ class ExpenseTrackerApp(tk.Tk):
         self.expense_list.refresh(start_date=start_date, end_date=end_date)
         self.toolbar.disable_actions()
 
-    def _on_expense_selection_changed(self, has_selection: bool):
+    def _on_expense_selection_changed(self, selected_id: int | None):
         """Callback triggered when expense selection changes."""
-        if has_selection:
-            self.toolbar.enable_actions()
+        selected_expense = self.expense_service.get_by_id(selected_id)
+
+        if bool(selected_id):
+            if selected_expense and selected_expense.is_recurring:
+                self.toolbar.disable_actions()
+            else:
+                self.toolbar.enable_actions()
         else:
             self.toolbar.disable_actions()
 
