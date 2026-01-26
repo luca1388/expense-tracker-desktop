@@ -66,6 +66,35 @@ class ExpenseRepository:
 
         return expense
 
+    def update(self, expense: Expense) -> None:
+        """
+        Update an existing expense.
+        """
+        with get_connection() as connection:
+            connection.execute(
+                """
+                UPDATE expenses
+                SET
+                    date = ?,
+                    amount = ?,
+                    category_id = ?,
+                    description = ?,
+                    attachment_path = ?,
+                    attachment_type = ?
+                WHERE id = ?
+                """,
+                (
+                    expense.date.isoformat(),
+                    expense.amount,
+                    expense.category_id,
+                    expense.description,
+                    expense.attachment_path,
+                    expense.attachment_type,
+                    expense.id,
+                ),
+            )
+            connection.commit()
+
     def get_all(self) -> list[Expense]:
         """
         Retrieves all expenses from the database.
@@ -144,3 +173,17 @@ class ExpenseRepository:
         with get_connection() as conn:
             conn.execute("DELETE FROM expenses WHERE id = ?", (expense_id,))
             conn.commit()
+
+    def get_by_id(self, expense_id: int) -> Expense | None:
+        """
+        Retrieve an expense by its ID.
+        """
+        with get_connection() as connection:
+            cursor = connection.cursor()
+            cursor.execute("SELECT * FROM expenses WHERE id = ?", (expense_id,))
+            row = cursor.fetchone()
+
+        if row is None:
+            return None
+
+        return self._map_row_to_expense(row)

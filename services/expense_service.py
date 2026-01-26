@@ -61,6 +61,46 @@ class ExpenseService:
 
         return self._repository.add(expense)
 
+    def update_expense(
+        self,
+        expense_id: int,
+        *,
+        date: date,
+        amount: float,
+        category_id: int,
+        description: Optional[str] = None,
+        attachment_path: Optional[str] = None,
+        attachment_type: Optional[str] = None,
+    ) -> None:
+        """
+        Update an existing expense.
+
+        This method updates only the Expense record.
+        It does not modify any RecurringExpense.
+        """
+        self._validate_amount(amount)
+
+        existing = self._repository.get_by_id(expense_id)
+        if existing is None:
+            raise ValueError(f"Expense with id {expense_id} not found")
+
+        updated = Expense(
+            id=existing.id,
+            date=date,
+            amount=amount,
+            category_id=category_id,
+            description=description,
+            is_recurring=existing.is_recurring,
+            attachment_path=attachment_path,
+            attachment_type=attachment_type,
+            analysis_data=existing.analysis_data,
+            analysis_summary=existing.analysis_summary,
+            created_at=existing.created_at,
+            recurring_expense_id=existing.recurring_expense_id,
+        )
+
+        self._repository.update(updated)
+
     def get_expenses_for_period(
         self,
         start_date: date,
@@ -96,3 +136,16 @@ class ExpenseService:
         """
         # Qui potresti aggiungere future logiche, es. soft delete o validazioni
         self._repository.delete(expense_id)
+
+    def get_by_id(self, expense_id: int) -> Expense:
+        """
+        Retrieve an expense by its ID.
+
+        Raises:
+            ValueError: if the expense does not exist.
+        """
+        expense = self._repository.get_by_id(expense_id)
+        if expense is None:
+            raise ValueError(f"Expense with id {expense_id} not found")
+
+        return expense

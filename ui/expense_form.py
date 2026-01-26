@@ -6,6 +6,7 @@ import tkinter as tk
 from tkinter import ttk, messagebox
 from datetime import date
 
+from domain.models import Expense
 from utils.frequency_constants import FREQUENCY_FORM_OPTIONS
 
 
@@ -22,6 +23,8 @@ class ExpenseFormFrame(ttk.Frame):
         category_service,
         recurring_expense_service,
         on_expense_added,
+        on_update_requested,
+        expense_to_modify=None,
     ):
         super().__init__(parent, padding=10)
 
@@ -29,6 +32,11 @@ class ExpenseFormFrame(ttk.Frame):
         self.category_service = category_service
         self.recurring_expense_service = recurring_expense_service
         self.on_expense_added = on_expense_added
+        self.on_update_requested = on_update_requested
+
+        # None → ADD mode
+        # int → EDIT mode
+        self._expense_to_modify: Expense | None = expense_to_modify
 
         self._configure_styles()
 
@@ -45,9 +53,23 @@ class ExpenseFormFrame(ttk.Frame):
         form.columnconfigure(0, weight=0)  # label
         form.columnconfigure(1, weight=1)  # input
 
-        self.date_var = tk.StringVar(value=date.today().isoformat())
-        self.amount_var = tk.StringVar()
-        self.desc_var = tk.StringVar()
+        self.date_var = tk.StringVar(
+            value=(
+                self._expense_to_modify.date
+                if self._expense_to_modify
+                else date.today().isoformat()
+            )
+        )
+        self.amount_var = tk.StringVar(
+            value=(
+                str(self._expense_to_modify.amount) if self._expense_to_modify else ""
+            )
+        )
+        self.desc_var = tk.StringVar(
+            value=(
+                self._expense_to_modify.description if self._expense_to_modify else ""
+            )
+        )
 
         categories = self.category_service.get_all_categories()
         self.categories = {c.name: c.id for c in categories}
@@ -81,6 +103,8 @@ class ExpenseFormFrame(ttk.Frame):
             state="readonly",
         )
 
+        self._update_frequency_combo_state(self._expense_to_modify)
+
         self._add_row(form, 4, "Frequenza spesa", self.frequency_combo)
 
     def submit(self):
@@ -94,6 +118,33 @@ class ExpenseFormFrame(ttk.Frame):
             return
 
         is_recurring = self.frequency_var.get() != "Spesa singola"
+
+        if self._expense_to_modify:
+            # EDIT mode
+            data = {
+                "date": date.fromisoformat(self.date_var.get()),
+                "amount": float(self.amount_var.get()),
+                "category_id": self.categories[self.category_combo.get()],
+                "description": self.desc_var.get(),
+                "attachment_path": None,
+                "attachment_type": None,
+            }
+
+            try:
+                self.on_update_requested(data)
+
+                self._clear_errors()
+
+                messagebox.showinfo("Success", "Spesa aggiornata con successo!")
+
+                self.on_expense_added()
+
+            except ValueError as e:
+                messagebox.showerror(
+                    "Error", f"Impossibile aggiornare la spesa: {str(e)}"
+                )
+
+            return
 
         try:
             if is_recurring:
@@ -206,3 +257,14 @@ class ExpenseFormFrame(ttk.Frame):
         for widget, error_label in widgets:
             widget.configure(style="")
             error_label.config(text="")
+
+    def _update_frequency_combo_state(self, condition):
+        """
+        Updates the state of the frequency combobox based on the given condition.
+
+        :param condition: A boolean indicating whether to disable the combobox.
+        """
+        if condition:
+            self.frequency_combo.configure(state="disabled")
+        else:
+            self.frequency_combo.configure(state="readonly")

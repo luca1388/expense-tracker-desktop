@@ -6,6 +6,9 @@ Defines a reusable modal window for adding a new expense.
 import tkinter as tk
 from tkinter import ttk
 
+from services.category_service import CategoryService
+from services.expense_service import ExpenseService
+from services.recurring_expense_service import RecurringExpenseService
 from ui.expense_form import ExpenseFormFrame
 
 
@@ -18,10 +21,12 @@ class AddExpenseModal(tk.Toplevel):
     def __init__(
         self,
         parent,
-        expense_service,
-        category_service,
-        recurring_expense_service,
+        expense_service: ExpenseService,
+        category_service: CategoryService,
+        recurring_expense_service: RecurringExpenseService,
         on_expense_added,
+        on_update_requested=None,
+        expense_id=None,
     ):
         """
         Initialize the add expense modal.
@@ -51,6 +56,8 @@ class AddExpenseModal(tk.Toplevel):
             category_service,
             recurring_expense_service,
             on_expense_added,
+            on_update_requested,
+            expense_id=expense_id,
         )
 
     def _position_modal(self, parent):
@@ -74,10 +81,12 @@ class AddExpenseModal(tk.Toplevel):
 
     def _build_ui(
         self,
-        expense_service,
-        category_service,
-        recurring_expense_service,
+        expense_service: ExpenseService,
+        category_service: CategoryService,
+        recurring_expense_service: RecurringExpenseService,
         on_expense_added,
+        on_update_requested,
+        expense_id=None,
     ):
         """Build the modal UI with form and buttons."""
         # Content frame for the form
@@ -88,6 +97,12 @@ class AddExpenseModal(tk.Toplevel):
         footer = ttk.Frame(self)
         footer.pack(fill=tk.X, padx=10, pady=(0, 10))
 
+        try:
+            expense_to_modify = expense_service.get_by_id(expense_id)
+        except ValueError:
+            # Handle case where expense doesn't exist
+            expense_to_modify = None
+
         # Create the expense form
         form = ExpenseFormFrame(
             content,
@@ -95,6 +110,10 @@ class AddExpenseModal(tk.Toplevel):
             category_service=category_service,
             recurring_expense_service=recurring_expense_service,
             on_expense_added=lambda: on_expense_added(self),
+            on_update_requested=lambda payload: on_update_requested(
+                expense_id, payload
+            ),
+            expense_to_modify=expense_to_modify,
         )
         form.pack(fill=tk.BOTH, padx=10, pady=10)
 

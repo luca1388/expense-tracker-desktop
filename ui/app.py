@@ -106,7 +106,16 @@ class ExpenseTrackerApp(tk.Tk):
 
     def _on_edit_expense_requested(self):
         """Handle edit button click."""
-        pass
+        expense_id = self.expense_list.get_selected_expense_id() or None
+        AddExpenseModal(
+            self,
+            expense_service=self.expense_service,
+            category_service=self.category_service,
+            recurring_expense_service=self.recurring_expense_service,
+            on_expense_added=self._on_expense_added,
+            on_update_requested=self._handle_update_expense,
+            expense_id=expense_id,
+        )
 
     def _on_add_expense_requested(self):
         """Handle add expense action from the toolbar."""
@@ -116,6 +125,7 @@ class ExpenseTrackerApp(tk.Tk):
             category_service=self.category_service,
             recurring_expense_service=self.recurring_expense_service,
             on_expense_added=self._on_expense_added,
+            on_update_requested=None,
         )
 
     def _on_delete_expense_requested(self):
@@ -141,3 +151,16 @@ class ExpenseTrackerApp(tk.Tk):
         start_date, end_date = month_date_range(year, month)
 
         self.expense_list.refresh(start_date=start_date, end_date=end_date)
+
+    def _handle_update_expense(self, expense_id: int, data: dict):
+        self.expense_service.update_expense(
+            expense_id,
+            **data,
+        )
+        # self.refresh_expense_list()
+
+        start_date, end_date = month_date_range(
+            self.toolbar.year_var.get(), self.toolbar.get_selected_month_number()
+        )
+        self.expense_list.refresh(start_date=start_date, end_date=end_date)
+        self.toolbar.disable_actions()
