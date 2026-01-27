@@ -60,6 +60,9 @@ class ExpenseListFrame(ttk.Frame):
         )
 
         self.tree.tag_configure("recurring", background="#F5FAFF")
+        # self.tree.tag_configure(
+        #     "recurring_stopped", foreground="#888888"  # grigio soft
+        # )
 
         self.tree.bind("<Button-3>", self._on_right_click)
 
