@@ -122,6 +122,32 @@ class RecurringExpenseRepository:
                 (generated_date.isoformat(), recurring_expense_id),
             )
 
+    def stop(
+        self,
+        recurring_id: int,
+        *,
+        end_date: date,
+    ) -> None:
+        """
+        Stops a recurring expense by setting its end date.
+
+        Args:
+            recurring_id (int): ID of the recurring expense
+            end_date (date): End date for the recurrence. If None, sets to today's date.
+        """
+        effective_end_date = end_date
+
+        with get_connection() as conn:
+            conn.execute(
+                """
+                UPDATE recurring_expenses
+                SET end_date = ?
+                WHERE id = ?
+                """,
+                (effective_end_date.isoformat(), recurring_id),
+            )
+            conn.commit()
+
     def _map_row_to_entity(self, row) -> RecurringExpense:
         """
         Maps a database row to a RecurringExpense domain entity.

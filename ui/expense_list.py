@@ -3,8 +3,11 @@ Docstring for ui.expense_list
 Defines the ExpenseListFrame for displaying a list of expenses.
 """
 
+from datetime import date
 import tkinter as tk
-from tkinter import ttk
+from tkinter import Menu, ttk
+from tkinter import messagebox
+from services.recurring_expense_service import RecurringExpenseService
 from utils.frequency_constants import FREQUENCY_LABELS
 
 
@@ -18,13 +21,16 @@ class ExpenseListFrame(ttk.Frame):
         self,
         parent,
         expense_service,
-        recurring_expense_service=None,
+        recurring_expense_service: RecurringExpenseService | None = None,
         on_selection_changed=None,
+        on_refresh_requested=None,
     ):
         super().__init__(parent)
         self.expense_service = expense_service
         self.recurring_expense_service = recurring_expense_service
         self.on_selection_changed = on_selection_changed
+        self._selected_recurring_id = None
+        self._on_refresh_requested = on_refresh_requested
 
         self._build_ui()
         # Improvement: insert the current month expenses by default
@@ -54,6 +60,15 @@ class ExpenseListFrame(ttk.Frame):
         )
 
         self.tree.tag_configure("recurring", background="#F5FAFF")
+
+        self.tree.bind("<Button-3>", self._on_right_click)
+
+        # Menu contestuale
+        self.context_menu = Menu(self, tearoff=0)
+        self.context_menu.add_command(
+            label="Interrompi spesa ricorrente",
+            command=self._on_stop_recurring_selected,
+        )
 
         self.tree.heading("id", text="ID")
         self.tree.heading("data", text="Data")
@@ -137,3 +152,58 @@ class ExpenseListFrame(ttk.Frame):
         item = selection[0]
         values = self.tree.item(item, "values")
         return int(values[0]) if values else None
+
+    def _on_right_click(self, event):
+        # 🔹 Seleziona esplicitamente la riga
+        # Individua riga sotto il click
+        item_id = self.tree.identify_row(event.y)
+        self.tree.selection_set(item_id)
+        self.tree.focus(item_id)
+
+        if not item_id:
+            return  # click su vuoto
+
+        # Salva ID per callback menu
+        expense = self.tree.item(item_id, "values")
+
+        print(f"Right-clicked expense: {expense}")
+        is_recurring = True if expense[-1] != "-" else False
+        expense_id = int(expense[0])
+        expense = self.expense_service.get_by_id(expense_id)
+
+        if not is_recurring:
+            return  # menu disponibile solo per recurring
+
+        self._selected_recurring_id = expense.recurring_expense_id
+        self.context_menu.post(event.x_root, event.y_root)
+
+    def _on_stop_recurring_selected(self):
+        if self._selected_recurring_id is None:
+            return
+
+        confirm = messagebox.askyesno(
+            "Interrompi spesa ricorrente",
+            "Vuoi interrompere questa spesa ricorrente? Le spese già registrate non verranno modificate.",
+        )
+        if not confirm:
+            return
+
+        try:
+            print(f"Stopping recurring expense ID {self._selected_recurring_id}")
+            self.recurring_expense_service.stop_recurring_expense(
+                self._selected_recurring_id, end_date=date.today()
+            )
+            messagebox.showinfo(
+                "Operazione completata", "Spesa ricorrente interrotta correttamente."
+            )
+            self._on_refresh_requested()
+        except ValueError as e:
+            print(f"error stopping recurring expense: {e}")
+            messagebox.showerror("Attenzione", "Questa spesa risulta già interrotta.")
+
+        # try:
+        #     self.recurring_service.stop_recurring_expense(self._selected_recurring_id)
+        #     messagebox.showinfo("Success", "Recurring expense stopped.")
+        #     self.refresh()  # aggiorna la lista
+        # except ValueError as e:
+        #     messagebox.showerror("Error", str(e))

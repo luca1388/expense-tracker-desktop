@@ -131,6 +131,34 @@ class RecurringExpenseService:
 
         return generated
 
+    def stop_recurring_expense(
+        self, recurring_id: int, *, end_date: date = None
+    ) -> None:
+        """
+        Stops a recurring expense by setting its end date.
+        Raises ValueError if recurring does not exist or is already stopped.
+
+
+        Args:
+        recurring_id (int): ID of the recurring expense
+        end_date (date): End date for the recurrence.
+        Defaults to today if not provided.
+        """
+        # Default: oggi
+        effective_end_date = end_date or date.today()
+
+        # Recupera la recurring dal repository
+        recurring = self._recurring_repository.get_by_id(recurring_id)
+        if recurring is None:
+            raise ValueError(f"Recurring expense with id {recurring_id} not found")
+
+        # Controllo se è già stoppata
+        if recurring.end_date is not None and recurring.end_date <= effective_end_date:
+            raise ValueError("Recurring expense is already stopped")
+
+        # Aggiorna il DB
+        self._recurring_repository.stop(recurring_id, end_date=effective_end_date)
+
     def _get_generation_start_date(self, recurring: RecurringExpense) -> date:
         """
         Determines the first date for which an expense should be generated.
