@@ -97,3 +97,8 @@
   - L'app analizza i documenti e crea (suggerisce) in automatico delle spese leggendo importo e data dal documento (bollette)
   - L'utente deve solo confermare che le spese suggerite si possono inserire riducendo il lavoro manuale
   - Reconciliation: se una spesa era già aggiunta a mano e risulta anche in un documento (estratto conto banca) bisogna fare un merge o comunque non duplicare la spesa
+
+## 🔹 FASE 9 – Localizzazione dell'app
+
+- [ ] App multilingua: italiano (default) e inglese (fallback)
+- [ ] Error handling con codici di errore invece che messaggi cosi si possono localizzare
