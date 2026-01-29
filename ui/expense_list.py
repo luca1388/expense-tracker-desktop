@@ -169,7 +169,7 @@ class ExpenseListFrame(ttk.Frame):
         # Salva ID per callback menu
         expense = self.tree.item(item_id, "values")
 
-        print(f"Right-clicked expense: {expense}")
+        # print(f"Right-clicked expense: {expense}")
         is_recurring = True if expense[-1] != "-" else False
         expense_id = int(expense[0])
         expense = self.expense_service.get_by_id(expense_id)

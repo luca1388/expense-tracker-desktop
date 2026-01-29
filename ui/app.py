@@ -57,7 +57,6 @@ class ExpenseTrackerApp(tk.Tk):
             on_edit_expense_requested=self._on_edit_expense_requested,
             on_delete_expense_requested=self._on_delete_expense_requested,
             on_add_expense_requested=self._on_add_expense_requested,
-            on_stop_recurring_expense_requested=self._on_stop_recurring_expense_requested,
         )
         self.toolbar.pack(fill=tk.X)
 

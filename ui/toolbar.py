@@ -38,7 +38,6 @@ class ToolbarFrame(ttk.Frame):
         on_edit_expense_requested=None,
         on_delete_expense_requested=None,
         on_add_expense_requested=None,
-        on_stop_recurring_expense_requested=None,
     ):
         super().__init__(parent, padding=5)
 
@@ -46,7 +45,6 @@ class ToolbarFrame(ttk.Frame):
         self.on_edit_expense_requested = on_edit_expense_requested
         self.on_delete_expense_requested = on_delete_expense_requested
         self.on_add_expense_requested = on_add_expense_requested
-        self.on_stop_recurring_expense_requested = on_stop_recurring_expense_requested
 
         today = date.today()
         self.year_var = tk.IntVar(value=today.year)
@@ -131,14 +129,6 @@ class ToolbarFrame(ttk.Frame):
         )
         self.delete_button.pack(side=tk.LEFT, padx=(0, 5))
 
-        self.stop_recurring_button = ttk.Button(
-            actions_container,
-            text="Interrompi spesa",
-            command=self.on_stop_recurring_expense_requested,
-            state=tk.DISABLED,
-        )
-        self.stop_recurring_button.pack(side=tk.LEFT, padx=(0, 5))
-
     def get_selected_month_number(self) -> int:
         """Returns the currently selected month number."""
         return MONTH_NAMES.index(self.month_var.get()) + 1
@@ -187,4 +177,3 @@ class ToolbarFrame(ttk.Frame):
         """Disable action buttons."""
         self.edit_button.config(state=tk.DISABLED)
         self.delete_button.config(state=tk.DISABLED)
-        self.stop_recurring_button.config(state=tk.DISABLED)
