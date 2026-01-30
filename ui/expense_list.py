@@ -75,6 +75,8 @@ class ExpenseListFrame(ttk.Frame):
             selectmode="browse",
         )
 
+        self.tree.column("id", width=0, stretch=False)
+
         self.tree.tag_configure("recurring", background="#F5FAFF")
         # self.tree.tag_configure(
         #     "recurring_stopped", foreground="#888888"  # grigio soft
@@ -188,6 +190,7 @@ class ExpenseListFrame(ttk.Frame):
             self.tree.insert(
                 "",
                 tk.END,
+                iid=str(exp.id),  # ID come iid
                 values=(
                     exp.id,
                     exp.date.isoformat(),
@@ -207,6 +210,7 @@ class ExpenseListFrame(ttk.Frame):
         """Notify parent when selection changes."""
         has_selection = bool(self.tree.selection())
         selected_id = self.get_selected_expense_id()
+        print(f"Expense selection changed: {selected_id}")
         if self.on_selection_changed:
             self.on_selection_changed(selected_id if has_selection else None)
 
