@@ -67,3 +67,15 @@ class CategoryService:
             list[Category]: List of all categories.
         """
         return self._repository.get_all()
+
+    def get_category_by_id(self, category_id: int) -> Category | None:
+        """
+        Retrieves a category by its ID.
+
+        Args:
+            category_id (int): The ID of the category to retrieve.
+
+        Returns:
+            Category | None: The category if found, otherwise None.
+        """
+        return self._repository.get_by_id(category_id)

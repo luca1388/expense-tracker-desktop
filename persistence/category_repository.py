@@ -55,3 +55,15 @@ class CategoryRepository:
             if row is None:
                 return None
             return Category(id=row[0], name=row[1], is_custom=bool(row[2]))
+
+    def get_by_id(self, category_id: int) -> Optional[Category]:
+        """
+        Returns a category by its ID, if it exists.
+        """
+        with self.conn as connection:
+            cursor = connection.cursor()
+            cursor.execute("SELECT * FROM categories WHERE id = ?", (category_id,))
+            row = cursor.fetchone()
+            if row is None:
+                return None
+            return Category(id=row[0], name=row[1], is_custom=bool(row[2]))

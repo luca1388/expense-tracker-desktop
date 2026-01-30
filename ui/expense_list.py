@@ -7,6 +7,7 @@ from datetime import date
 import tkinter as tk
 from tkinter import Menu, ttk
 from tkinter import messagebox
+from services.category_service import CategoryService
 from services.expense_service import ExpenseService, ExpenseSortField
 from services.recurring_expense_service import RecurringExpenseService
 from utils.frequency_constants import FREQUENCY_LABELS
@@ -36,6 +37,7 @@ class ExpenseListFrame(ttk.Frame):
         parent,
         expense_service: ExpenseService,
         recurring_expense_service: RecurringExpenseService | None = None,
+        category_service: CategoryService | None = None,
         on_selection_changed=None,
         on_refresh_requested=None,
         on_sort_requested=None,
@@ -43,6 +45,7 @@ class ExpenseListFrame(ttk.Frame):
         super().__init__(parent)
         self.expense_service = expense_service
         self.recurring_expense_service = recurring_expense_service
+        self.category_service = category_service
         self.on_selection_changed = on_selection_changed
         self._selected_recurring_id = None
         self._on_refresh_requested = on_refresh_requested
@@ -187,6 +190,13 @@ class ExpenseListFrame(ttk.Frame):
                 if recurring:
                     frequency_display = FREQUENCY_LABELS.get(recurring.frequency, "")
 
+            # Get category name
+            category_name = (
+                self.category_service.get_category_by_id(exp.category_id).name
+                if self.category_service
+                else "N/A"
+            )
+
             self.tree.insert(
                 "",
                 tk.END,
@@ -195,7 +205,7 @@ class ExpenseListFrame(ttk.Frame):
                     exp.id,
                     exp.date.isoformat(),
                     f"{exp.amount:.2f}",
-                    exp.category_id,  # miglioreremo con join o cache
+                    category_name,
                     exp.description or "",
                     frequency_display,
                 ),

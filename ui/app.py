@@ -92,6 +92,7 @@ class ExpenseTrackerApp(tk.Tk):
             expense_service=self.expense_service,
             on_selection_changed=self._on_expense_selection_changed,
             recurring_expense_service=self.recurring_expense_service,
+            category_service=self.category_service,
             on_refresh_requested=self.refresh_expense_list,
             on_sort_requested=self.on_sort_requested,
         )
