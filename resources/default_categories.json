@@ -1,34 +1,22 @@
 [
   {
-    "name": "Affitto",
+    "name": "Affitto/Mutuo",
     "type": "Utility"
   },
   {
-    "name": "Luce",
+    "name": "Bollette",
     "type": "Utility"
   },
   {
-    "name": "Gas",
-    "type": "Utility"
-  },
-  {
-    "name": "Acqua",
-    "type": "Utility"
-  },
-  {
-    "name": "Cibo",
+    "name": "Cibo/Alimentari",
     "type": "Food"
   },
   {
-    "name": "Ristorante",
+    "name": "Ristoranti/Bar",
     "type": "Food"
   },
   {
     "name": "Salute",
-    "type": "Health"
-  },
-  {
-    "name": "Medicina",
     "type": "Health"
   },
   {
@@ -64,11 +52,31 @@
     "type": "Utility"
   },
   {
-    "name": "Viaggi",
+    "name": "Viaggi & Vacanze",
     "type": "Travel"
   },
   {
     "name": "Regali",
     "type": "Gifts"
+  },
+  {
+    "name": "Sport",
+    "type": "Entertainment"
+  },
+  {
+    "name": "Istruzione",
+    "type": "Education"
+  },
+  {
+    "name": "Animali domestici",
+    "type": "Pets"
+  },
+  {
+    "name": "Shopping",
+    "type": "Miscellaneous"
+  },
+  {
+    "name": "Bambini",
+    "type": "Family"
   }
 ]
