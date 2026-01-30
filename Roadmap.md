@@ -10,7 +10,7 @@
 - [x] Generazione deterministica (no duplicati)
 - [x] Generazione immediata della prima spesa alla creazione
 - [x] Campo `recurring_expense_id` in `Expense`
-- [ ] Migration DB step-by-step
+- [x] Migration DB step-by-step
   - aggiunta `recurring_expense_id` in `expenses`
   - eventuale backfill
   - aggiornamento versione DB
@@ -24,18 +24,19 @@
 - [x] Colonna **Frequenza**
 - [x] Evidenziazione visiva spese ricorrenti
   - colori soft
-- [ ] (Backlog) Click destro su riga ricorrente → **Interrompi ricorrenza**
+- [x] (Backlog) Click destro su riga - ricorrente → **Interrompi ricorrenza**
+- [ ] Marcare visivamente le righe interrotte (grigio / colonna Stato)
 
 ### 2.2 Sorting & UX Lista
 
 - [ ] Sorting colonne (data, importo, categoria…) mantenendo l’ID interno
-- [ ] Colonne numeriche allineate a destra
+- [x] Colonne numeriche allineate a sinistra
 - [ ] Nascondere il campo ID dalla lista
+- [ ] Refactor column index
 
 ### 2.3 Actions toolbar
 
 - [ ] Valutare se rimuovere la actions toolbar e invece implementare le azioni con un menu contestuale che appare con click tasto destro sulla riga
-- [ ] Delete di una recurring expense
 
 ---
 
@@ -50,8 +51,8 @@
 
 ### 3.2 Edit Expense
 
-- [ ] Basic edit expense form
-- [ ] Decidere se mostrare la frequency nel form edit 🧠
+- [x] Basic edit expense form
+- [x] Decidere se mostrare la frequency nel form edit 🧠
 - [ ] Gestione edit spesa singola vs ricorrente
 
 ---
@@ -65,6 +66,7 @@
 
 ## 🔹 FASE 5 – Analisi dati
 
+- [ ] Fase preliminare: valutare se creare un menu di sistema (File, View, ...) dove mettere le actions (nuova spesa) e aprire la view di Analisi
 - [ ] Nuova sezione **Analisi**
   - UX: dove inserirla?
 - [ ] Confronto spese per categoria
@@ -93,6 +95,7 @@
 - [ ] Un modello LOCALE di AI analizza il documento e ne estrae informazioni rilevanti
   - LLM embedded nell'app in modo che i dati personali dell'utente non sono analizzati da LLM remote di terze parti (privacy first)
   - Valutare Olama
+  - **Primo step**: analisi PDF senza LLM usando pdfplumber
 - [ ] Possibilità di importare le spese non solo a mano, ma leggere una cartella contenente files PDF.
   - L'app analizza i documenti e crea (suggerisce) in automatico delle spese leggendo importo e data dal documento (bollette)
   - L'utente deve solo confermare che le spese suggerite si possono inserire riducendo il lavoro manuale
@@ -102,3 +105,13 @@
 
 - [ ] App multilingua: italiano (default) e inglese (fallback)
 - [ ] Error handling con codici di errore invece che messaggi cosi si possono localizzare
+
+## 🔹 FASE 10 – Testing
+
+- [x] Aggiungere unit test per spese ricorrenti (STOP / edge cases) ✅
+  - stop active
+  - stop already stopped → ValueError
+  - stop non esistente → ValueError
+- [ ] Considerare test per Expense normali (create / update / delete) in futuro
+- [x] Fixture `db_connection_test` per DB in-memory
+- [x] Fixture `recurring_repository` e `recurring_service` per ridurre boilerplate test
