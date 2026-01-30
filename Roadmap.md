@@ -90,6 +90,7 @@
 - [ ] Migliorare allineamenti e spaziature
 - [ ] Migliore leggibilità tabella
 - [ ] Stati hover / selected più chiari
+- [ ] Empty screen al primo avvio dell'app
 
 ## 🔹 FASE 8 – Versione 2 dell'app: AI support
 
