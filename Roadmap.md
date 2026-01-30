@@ -29,10 +29,12 @@
 
 ### 2.2 Sorting & UX Lista
 
-- [ ] Sorting colonne (data, importo, categoria…) mantenendo l’ID interno
+- [x] Sorting colonne (data, importo, categoria…) mantenendo l’ID interno
 - [x] Colonne numeriche allineate a sinistra
-- [ ] Nascondere il campo ID dalla lista
+- [x] Nascondere il campo ID dalla lista
 - [ ] Refactor column index
+- [ ] Aggiungere sorting per frequency e disattivare per description
+- [ ] Default sorting + highlight sorted column
 
 ### 2.3 Actions toolbar
 
