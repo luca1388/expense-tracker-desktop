@@ -9,13 +9,15 @@ import sqlite3
 from datetime import date, datetime
 
 from domain.models import Expense
-from persistence.db import get_connection
 
 
 class ExpenseRepository:
     """
     Repository for Expense entities.
     """
+
+    def __init__(self, connection: sqlite3.Connection):
+        self.conn = connection
 
     def add(self, expense: Expense) -> Expense:
         """
@@ -27,7 +29,7 @@ class ExpenseRepository:
         Returns:
             Expense: The persisted expense with the generated ID
         """
-        with get_connection() as connection:
+        with self.conn as connection:
             cursor = connection.cursor()
 
             cursor.execute(
@@ -70,7 +72,7 @@ class ExpenseRepository:
         """
         Update an existing expense.
         """
-        with get_connection() as connection:
+        with self.conn as connection:
             connection.execute(
                 """
                 UPDATE expenses
@@ -102,7 +104,7 @@ class ExpenseRepository:
         Returns:
             list[Expense]: List of expenses
         """
-        with get_connection() as connection:
+        with self.conn as connection:
             cursor = connection.cursor()
 
             cursor.execute("SELECT * FROM expenses")
@@ -121,7 +123,7 @@ class ExpenseRepository:
         Returns:
             list[Expense]: Filtered expenses
         """
-        with get_connection() as connection:
+        with self.conn as connection:
             cursor = connection.cursor()
 
             cursor.execute(
@@ -170,7 +172,7 @@ class ExpenseRepository:
 
         :param expense_id: ID of the expense to delete
         """
-        with get_connection() as conn:
+        with self.conn as conn:
             conn.execute("DELETE FROM expenses WHERE id = ?", (expense_id,))
             conn.commit()
 
@@ -178,7 +180,7 @@ class ExpenseRepository:
         """
         Retrieve an expense by its ID.
         """
-        with get_connection() as connection:
+        with self.conn as connection:
             cursor = connection.cursor()
             cursor.execute("SELECT * FROM expenses WHERE id = ?", (expense_id,))
             row = cursor.fetchone()

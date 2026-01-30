@@ -1,8 +1,12 @@
+"""
+Repository responsible for persistence of RecurringExpense entities.
+"""
+
 from datetime import date, datetime
+import sqlite3
 from typing import List, Optional
 
 from domain.models import RecurringExpense, RecurrenceFrequency
-from persistence.db import get_connection
 
 
 class RecurringExpenseRepository:
@@ -10,11 +14,14 @@ class RecurringExpenseRepository:
     Repository responsible for persistence of RecurringExpense entities.
     """
 
+    def __init__(self, connection: sqlite3.Connection):
+        self.conn = connection
+
     def add(self, recurring_expense: RecurringExpense) -> RecurringExpense:
         """
         Persists a new RecurringExpense into the database.
         """
-        with get_connection() as connection:
+        with self.conn as connection:
             cursor = connection.cursor()
 
             cursor.execute(
@@ -64,7 +71,7 @@ class RecurringExpenseRepository:
         """
         Returns all recurring expenses.
         """
-        with get_connection() as connection:
+        with self.conn as connection:
             cursor = connection.cursor()
             cursor.execute("SELECT * FROM recurring_expenses")
             rows = cursor.fetchall()
@@ -75,7 +82,7 @@ class RecurringExpenseRepository:
         """
         Returns a recurring expense by its ID, if found.
         """
-        with get_connection() as connection:
+        with self.conn as connection:
             cursor = connection.cursor()
             cursor.execute(
                 "SELECT * FROM recurring_expenses WHERE id = ?",
@@ -92,7 +99,7 @@ class RecurringExpenseRepository:
         """
         Returns a recurring expense by its name, if found.
         """
-        with get_connection() as connection:
+        with self.conn as connection:
             cursor = connection.cursor()
             cursor.execute(
                 "SELECT * FROM recurring_expenses WHERE name = ?",
@@ -111,7 +118,7 @@ class RecurringExpenseRepository:
         """
         Updates the last_generated_date field for a recurring expense.
         """
-        with get_connection() as connection:
+        with self.conn as connection:
             cursor = connection.cursor()
             cursor.execute(
                 """
@@ -137,7 +144,7 @@ class RecurringExpenseRepository:
         """
         effective_end_date = end_date
 
-        with get_connection() as conn:
+        with self.conn as conn:
             conn.execute(
                 """
                 UPDATE recurring_expenses

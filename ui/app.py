@@ -10,7 +10,7 @@ from tkinter import messagebox
 
 from persistence.expense_repository import ExpenseRepository
 from persistence.category_repository import CategoryRepository
-
+from persistence.db import get_connection
 from persistence.recurring_expense_repository import RecurringExpenseRepository
 from services.category_service import CategoryService
 from services.expense_service import ExpenseService
@@ -32,12 +32,18 @@ class ExpenseTrackerApp(tk.Tk):
         self.title("Expense Tracker")
         self.geometry("900x500")
 
-        expense_repository = ExpenseRepository()
+        db_connection = get_connection()
+
+        expense_repository = ExpenseRepository(connection=db_connection)
 
         # Repositories
         self.expense_service = ExpenseService(expense_repository)
-        self.category_service = CategoryService(CategoryRepository())
-        self.recurring_expense_repo = RecurringExpenseRepository()
+        self.category_service = CategoryService(
+            CategoryRepository(connection=db_connection)
+        )
+        self.recurring_expense_repo = RecurringExpenseRepository(
+            connection=db_connection
+        )
         self.recurring_expense_service = RecurringExpenseService(
             self.recurring_expense_repo, expense_repository
         )

@@ -166,7 +166,7 @@ def pipeline_completa(pdf_path):
 
 
 def main():
-    pdf_path = "./data/hype.pdf"
+    pdf_path = "./data/bolletta_acqua.pdf"
     risultati = pipeline_estrattore(
         pdf_path
     )  # Funzione definita nei messaggi precedenti

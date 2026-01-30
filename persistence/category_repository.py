@@ -6,13 +6,16 @@ This module provides repository classes to interact with the database
 for managing expense categories.
 """
 
+import sqlite3
 from typing import Optional
 from domain.models import Category
-from persistence.db import get_connection
 
 
 class CategoryRepository:
     """Repository for managing expense categories in the database."""
+
+    def __init__(self, connection: sqlite3.Connection):
+        self.conn = connection
 
     def get_all(self) -> list[Category]:
         """
@@ -22,7 +25,7 @@ class CategoryRepository:
         :return: Description
         :rtype: list[Category]
         """
-        with get_connection() as conn:
+        with self.conn as conn:
             cursor = conn.cursor()
             cursor.execute("SELECT id, name, is_custom FROM categories")
             rows = cursor.fetchall()
@@ -33,7 +36,7 @@ class CategoryRepository:
 
     def add(self, category: Category) -> None:
         """Adds a new category to the database"""
-        with get_connection() as conn:
+        with self.conn as conn:
             cursor = conn.cursor()
             cursor.execute(
                 "INSERT INTO categories (name, is_custom) VALUES (?, ?)",
@@ -45,7 +48,7 @@ class CategoryRepository:
         """
         Returns a category by its name, if it exists.
         """
-        with get_connection() as connection:
+        with self.conn as connection:
             cursor = connection.cursor()
             cursor.execute("SELECT * FROM categories WHERE name = ?", (name,))
             row = cursor.fetchone()

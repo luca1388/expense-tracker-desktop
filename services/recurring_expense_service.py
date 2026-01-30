@@ -144,12 +144,9 @@ class RecurringExpenseService:
         end_date (date): End date for the recurrence.
         Defaults to today if not provided.
         """
+        end_date = end_date if end_date is not None else date.today()
         # Default: oggi
-        effective_end_date = (
-            end_date or date.today() or date.today()
-            if end_date > date.today()
-            else end_date
-        )
+        effective_end_date = end_date if end_date > date.today() else date.today()
 
         # Recupera la recurring dal repository
         recurring = self._recurring_repository.get_by_id(recurring_id)

@@ -9,13 +9,14 @@ and initialize the required tables for the expense tracker application.
 import sqlite3
 from pathlib import Path
 
-DB_PATH = Path("data/expenses.db")
+PRODUCTION_DB_STRING_PATH = "data/expenses.db"
 
 
-def get_connection():
+def get_connection(db_path: str = PRODUCTION_DB_STRING_PATH) -> sqlite3.Connection:
     """Establishes and returns a connection to the SQLite database."""
-    DB_PATH.parent.mkdir(parents=True, exist_ok=True)
-    connection = sqlite3.connect(DB_PATH)
+    path = Path(db_path)
+    path.parent.mkdir(parents=True, exist_ok=True)
+    connection = sqlite3.connect(path)
     # Senza questa riga:
     # potresti inserire una spesa con category_id inesistente
     # nessun errore verrebbe lanciato
@@ -23,9 +24,9 @@ def get_connection():
     return connection
 
 
-def init_db():
+def init_db(connection: sqlite3.Connection) -> None:
     """Initializes the database with the required tables."""
-    with get_connection() as conn:
+    with connection as conn:
         cursor = conn.cursor()
 
         cursor.execute(
