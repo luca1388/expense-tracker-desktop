@@ -53,6 +53,10 @@ Offline-first desktop application to track personal and recurring expenses, with
 │   ├─ month_selector.py
 │   ├─ add_expense_modal.py
 │   └─ toolbar.py
+├─ tests/
+│   ├─ conftest.py
+│   └─ services/
+│       └─ test_recurring_expense_service.py
 ├─ main.py (playground)
 └─ main_ui.py (entrypoint)
 ```
