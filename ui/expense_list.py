@@ -45,10 +45,10 @@ class ExpenseListFrame(ttk.Frame):
             side=tk.LEFT
         )
 
-        self.total_label = ttk.Label(
-            header_frame, text="Totale: € 0.00", font=("Arial", 10, "bold")
-        )
-        self.total_label.pack(side=tk.RIGHT)
+        # self.total_label = ttk.Label(
+        #     header_frame, text="Totale: € 0.00", font=("Arial", 10, "bold")
+        # )
+        # self.total_label.pack(side=tk.RIGHT)
 
         columns = ("id", "data", "importo", "categoria", "descrizione", "frequenza")
 
@@ -73,24 +73,39 @@ class ExpenseListFrame(ttk.Frame):
             command=self._on_stop_recurring_selected,
         )
 
-        self.tree.heading("id", text="ID")
-        self.tree.heading("data", text="Data")
-        self.tree.heading("importo", text="Importo")
-        self.tree.heading("categoria", text="Categoria")
-        self.tree.heading("descrizione", text="Descrizione")
-        self.tree.heading("frequenza", text="Frequenza")
+        self.tree.heading("id", text="ID", anchor="w")
+        self.tree.heading("data", text="Data", anchor="w")
+        self.tree.heading("importo", text="Importo", anchor="w")
+        self.tree.heading("categoria", text="Categoria", anchor="w")
+        self.tree.heading("descrizione", text="Descrizione", anchor="w")
+        self.tree.heading("frequenza", text="Frequenza", anchor="w")
 
-        self.tree.column("id", width=0)
-        self.tree.column("data", width=90)
-        self.tree.column("importo", width=80, anchor="e")
-        self.tree.column("categoria", width=120)
-        self.tree.column("descrizione", width=250)
-        self.tree.column("frequenza", width=120)
+        self.tree.column("id", width=0, anchor="w")
+        self.tree.column("data", width=90, anchor="w")
+        self.tree.column("importo", width=80, anchor="w")
+        self.tree.column("categoria", width=120, anchor="w")
+        self.tree.column("descrizione", width=250, anchor="w")
+        self.tree.column("frequenza", width=120, anchor="w")
 
         # Enable / disable buttons based on selection
         self.tree.bind("<<TreeviewSelect>>", self._on_selection_changed)
 
         self.tree.pack(fill=tk.BOTH, expand=True)
+
+        # 2. FOOTER FISSO (La riga grigia)
+        self.footer = tk.Frame(self, bg="#f0f0f0", height=30)  # Grigio chiaro
+        self.footer.pack(side=tk.BOTTOM, fill=tk.X)
+        self.footer.pack_propagate(False)  # Forza l'altezza fissa
+
+        self.total_label_footer = ttk.Label(
+            self.footer,
+            text="Totale: € 0.00",
+            background="#f0f0f0",
+            font=("TkDefaultFont", 10, "bold"),
+        )
+        # Il padding a destra dovrebbe idealmente corrispondere alla larghezza
+        # della scrollbar + eventuali margini per allinearsi alla colonna Amount
+        self.total_label_footer.pack(side=tk.LEFT, padx=(10, 0))
 
     def refresh(self, start_date, end_date) -> float:
         """Refreshes the expense list from the repository."""
@@ -133,7 +148,8 @@ class ExpenseListFrame(ttk.Frame):
                 tags=("recurring",) if exp.recurring_expense_id else (),
             )
 
-        self.total_label.config(text=f"Totale: € {total:.2f}")
+        # self.total_label.config(text=f"Totale: € {total:.2f}")
+        self.total_label_footer.config(text=f"Totale: € {total:.2f}")
         return total
 
     def _on_selection_changed(self, _event) -> None:
