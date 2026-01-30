@@ -7,8 +7,22 @@ from datetime import date
 import tkinter as tk
 from tkinter import Menu, ttk
 from tkinter import messagebox
+from services.expense_service import ExpenseService, ExpenseSortField
 from services.recurring_expense_service import RecurringExpenseService
 from utils.frequency_constants import FREQUENCY_LABELS
+
+
+COLUMN_SORT_MAPPING = {
+    "date": ExpenseSortField.DATE,
+    "amount": ExpenseSortField.AMOUNT,
+    "category": ExpenseSortField.CATEGORY,
+}
+
+SORT_FIELD_TO_COLUMN_ID = {
+    ExpenseSortField.DATE: "date",
+    ExpenseSortField.AMOUNT: "amount",
+    ExpenseSortField.CATEGORY: "category",
+}
 
 
 class ExpenseListFrame(ttk.Frame):
@@ -20,10 +34,11 @@ class ExpenseListFrame(ttk.Frame):
     def __init__(
         self,
         parent,
-        expense_service,
+        expense_service: ExpenseService,
         recurring_expense_service: RecurringExpenseService | None = None,
         on_selection_changed=None,
         on_refresh_requested=None,
+        on_sort_requested=None,
     ):
         super().__init__(parent)
         self.expense_service = expense_service
@@ -31,6 +46,7 @@ class ExpenseListFrame(ttk.Frame):
         self.on_selection_changed = on_selection_changed
         self._selected_recurring_id = None
         self._on_refresh_requested = on_refresh_requested
+        self._on_sort_requested = on_sort_requested
 
         self._build_ui()
         # Improvement: insert the current month expenses by default
@@ -73,12 +89,42 @@ class ExpenseListFrame(ttk.Frame):
             command=self._on_stop_recurring_selected,
         )
 
-        self.tree.heading("id", text="ID", anchor="w")
-        self.tree.heading("data", text="Data", anchor="w")
-        self.tree.heading("importo", text="Importo", anchor="w")
-        self.tree.heading("categoria", text="Categoria", anchor="w")
-        self.tree.heading("descrizione", text="Descrizione", anchor="w")
-        self.tree.heading("frequenza", text="Frequenza", anchor="w")
+        self.tree.heading(
+            "id",
+            text="ID",
+            anchor="w",
+            command=lambda: self._on_column_header_clicked("id"),
+        )
+        self.tree.heading(
+            "data",
+            text="Data",
+            anchor="w",
+            command=lambda: self._on_column_header_clicked("date"),
+        )
+        self.tree.heading(
+            "importo",
+            text="Importo",
+            anchor="w",
+            command=lambda: self._on_column_header_clicked("amount"),
+        )
+        self.tree.heading(
+            "categoria",
+            text="Categoria",
+            anchor="w",
+            command=lambda: self._on_column_header_clicked("category"),
+        )
+        self.tree.heading(
+            "descrizione",
+            text="Descrizione",
+            anchor="w",
+            command=lambda: self._on_column_header_clicked("description"),
+        )
+        self.tree.heading(
+            "frequenza",
+            text="Frequenza",
+            anchor="w",
+            command=lambda: self._on_column_header_clicked("frequency"),
+        )
 
         self.tree.column("id", width=0, anchor="w")
         self.tree.column("data", width=90, anchor="w")
@@ -107,17 +153,22 @@ class ExpenseListFrame(ttk.Frame):
         # della scrollbar + eventuali margini per allinearsi alla colonna Amount
         self.total_label_footer.pack(side=tk.LEFT, padx=(10, 0))
 
-    def refresh(self, start_date, end_date) -> float:
+    def refresh(self, start_date, end_date, sort_field, sort_direction) -> float:
         """Refreshes the expense list from the repository."""
         for row in self.tree.get_children():
             self.tree.delete(row)
 
         total = 0.0
         if not start_date or not end_date:
-            expenses = self.expense_service.get_all_expenses()
+            expenses = self.expense_service.get_all_expenses_sorted(
+                sort_by=sort_field, direction=sort_direction
+            )
         else:
-            expenses = self.expense_service.get_expenses_for_period(
-                start_date, end_date
+            expenses = self.expense_service.get_expenses_for_month_sorted(
+                start_date,
+                end_date,
+                sort_by=sort_field,
+                direction=sort_direction,
             )
 
         for exp in expenses:
@@ -208,7 +259,7 @@ class ExpenseListFrame(ttk.Frame):
             return
 
         try:
-            print(f"Stopping recurring expense ID {self._selected_recurring_id}")
+            # print(f"Stopping recurring expense ID {self._selected_recurring_id}")
             self.recurring_expense_service.stop_recurring_expense(
                 self._selected_recurring_id, end_date=date.today()
             )
@@ -220,9 +271,31 @@ class ExpenseListFrame(ttk.Frame):
             print(f"error stopping recurring expense: {e}")
             messagebox.showerror("Attenzione", "Questa spesa risulta già interrotta.")
 
-        # try:
-        #     self.recurring_service.stop_recurring_expense(self._selected_recurring_id)
-        #     messagebox.showinfo("Success", "Recurring expense stopped.")
-        #     self.refresh()  # aggiorna la lista
-        # except ValueError as e:
-        #     messagebox.showerror("Error", str(e))
+    def _on_column_header_clicked(self, column_id: str) -> None:
+        # print(f"Column header clicked: {column_id}")
+        sort_field = COLUMN_SORT_MAPPING.get(column_id)
+        # print(f"Mapped sort field: {sort_field}")
+        if sort_field is None:
+            return
+
+        self._on_sort_requested(sort_field)
+
+    def set_sorted_column(self, sort_field: ExpenseSortField) -> None:
+        """
+        Docstring for set_sorted_column
+
+        :param self: Description
+        :param sort_field: Description
+        :type sort_field: ExpenseSortField
+        """
+        return
+        active_column = SORT_FIELD_TO_COLUMN_ID.get(sort_field)
+
+        for column_id in self.tree["columns"]:
+            style = (
+                "Sorted.Treeview.Heading"
+                if column_id == active_column
+                else "Treeview.Heading"
+            )
+            print(f"Setting style for column {column_id}: {style}")
+            self.tree.heading(column_id, style=style)

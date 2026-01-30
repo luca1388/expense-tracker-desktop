@@ -13,7 +13,7 @@ from persistence.category_repository import CategoryRepository
 from persistence.db import get_connection
 from persistence.recurring_expense_repository import RecurringExpenseRepository
 from services.category_service import CategoryService
-from services.expense_service import ExpenseService
+from services.expense_service import ExpenseService, SortDirection, ExpenseSortField
 from services.recurring_expense_service import RecurringExpenseService
 from ui.expense_list import ExpenseListFrame
 from ui.toolbar import ToolbarFrame
@@ -50,7 +50,23 @@ class ExpenseTrackerApp(tk.Tk):
 
         self.recurring_expense_service.generate_missing_expenses(date.today())
 
+        self._sort_field = ExpenseSortField.DATE
+        self._sort_direction = SortDirection.ASC
+
         self._build_ui()
+
+    def _init_styles(self) -> None:
+        style = ttk.Style()
+
+        style.configure(
+            "Treeview.Heading",
+            font=("TkDefaultFont", 10),
+        )
+
+        style.configure(
+            "Sorted.Treeview.Heading",
+            font=("TkDefaultFont", 10, "bold"),
+        )
 
     def _build_ui(self):
         # --- TOP: Unified toolbar
@@ -77,6 +93,7 @@ class ExpenseTrackerApp(tk.Tk):
             on_selection_changed=self._on_expense_selection_changed,
             recurring_expense_service=self.recurring_expense_service,
             on_refresh_requested=self.refresh_expense_list,
+            on_sort_requested=self.on_sort_requested,
         )
         self.expense_list.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
 
@@ -92,13 +109,39 @@ class ExpenseTrackerApp(tk.Tk):
 
         modal.destroy()
 
+    def on_sort_requested(self, sort_field: ExpenseSortField) -> None:
+        """
+        Docstring for on_sort_requested
+
+        :param self: Description
+        :param sort_field: Description
+        :type sort_field: ExpenseSortField
+        """
+        if self._sort_field == sort_field:
+            # toggle direction
+            self._sort_direction = (
+                SortDirection.DESC
+                if self._sort_direction == SortDirection.ASC
+                else SortDirection.ASC
+            )
+        else:
+            self._sort_field = sort_field
+            self._sort_direction = SortDirection.ASC
+
+        self.refresh_expense_list()
+
     def _on_month_changed(self, year: int, month: int):
         """Callback triggered when the month selection changes."""
         if not hasattr(self, "toolbar") or not hasattr(self, "expense_list"):
             return
         start_date, end_date = month_date_range(year, month)
 
-        self.expense_list.refresh(start_date=start_date, end_date=end_date)
+        self.expense_list.refresh(
+            start_date=start_date,
+            end_date=end_date,
+            sort_field=self._sort_field,
+            sort_direction=self._sort_direction,
+        )
         self.toolbar.disable_actions()
 
     def _on_expense_selection_changed(self, selected_id: int | None):
@@ -177,4 +220,10 @@ class ExpenseTrackerApp(tk.Tk):
         start_date, end_date = month_date_range(
             self.toolbar.year_var.get(), self.toolbar.get_selected_month_number()
         )
-        self.expense_list.refresh(start_date=start_date, end_date=end_date)
+        self.expense_list.refresh(
+            start_date=start_date,
+            end_date=end_date,
+            sort_field=self._sort_field,
+            sort_direction=self._sort_direction,
+        )
+        self.expense_list.set_sorted_column(self._sort_field)

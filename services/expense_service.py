@@ -6,10 +6,44 @@ Contains business logic and coordinates repositories.
 """
 
 from datetime import date, datetime
-from typing import Optional
+from enum import Enum
+from typing import List, Optional
 
 from domain.models import Expense
 from persistence.expense_repository import ExpenseRepository
+
+
+class ExpenseSortField(Enum):
+    """
+    Docstring for ExpenseSortField
+
+    :var Returns: Description
+    :var Expense: Description
+    :vartype Expense: The
+    :var Args: Description
+    :var Raises: Description
+    :var ValueError: Description
+    """
+
+    DATE = "date"
+    AMOUNT = "amount"
+    CATEGORY = "category"
+
+
+class SortDirection(Enum):
+    """
+    Docstring for SortDirection
+
+    :var Returns: Description
+    :var Expense: Description
+    :vartype Expense: The
+    :var Args: Description
+    :var Raises: Description
+    :var ValueError: Description
+    """
+
+    ASC = "asc"
+    DESC = "desc"
 
 
 class ExpenseService:
@@ -149,3 +183,52 @@ class ExpenseService:
             raise ValueError(f"Expense with id {expense_id} not found")
 
         return expense
+
+    def get_all_expenses_sorted(
+        self, sort_by: ExpenseSortField, direction: SortDirection
+    ) -> List[Expense]:
+        """
+        Return all expenses sorted by the given field and direction.
+        """
+        expenses = self.get_all_expenses()
+
+        reverse = direction == SortDirection.DESC
+
+        return sorted(expenses, key=self.get_sorting_function(sort_by), reverse=reverse)
+
+    def get_expenses_for_month_sorted(
+        self,
+        start_date: date,
+        end_date: date,
+        sort_by: ExpenseSortField,
+        direction: SortDirection,
+    ) -> List[Expense]:
+        """
+        Return expenses for a given month sorted by the given field and direction.
+        """
+        expenses = self.get_expenses_for_period(
+            start_date=start_date, end_date=end_date
+        )
+
+        reverse = direction == SortDirection.DESC
+
+        return sorted(expenses, key=self.get_sorting_function(sort_by), reverse=reverse)
+
+    def get_sorting_function(self, sort_by: ExpenseSortField):
+        """
+        Docstring for get_sorting_function
+
+        :param self: Description
+        :param sort_by: Description
+        :type sort_by: ExpenseSortField
+        """
+        functions = {
+            ExpenseSortField.DATE: lambda e: e.date,
+            ExpenseSortField.AMOUNT: lambda e: e.amount,
+            ExpenseSortField.CATEGORY: lambda e: e.category_id,
+        }
+        return (
+            functions.get(sort_by, lambda e: e.date)
+            if sort_by in functions
+            else lambda e: e.date
+        )
