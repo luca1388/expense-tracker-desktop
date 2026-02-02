@@ -74,6 +74,7 @@
 - [ ] Confronto spese per categoria
   - mese corrente vs mese precedente
 - [ ] Totali e variazioni percentuali
+- [ ] Sezione (tab) recap annuale: analisi che mostra l'andamento annuale (grafico con spese di categoria per ogni mese, media mensile di spesa globale e per categoria)
 
 ---
 
