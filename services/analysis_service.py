@@ -322,7 +322,8 @@ class AnalysisService:
 
         by_category: list[CategorySummary] = [
             CategorySummary(
-                category_name=f"Category {category_id}",  # TODO: map category_id to category name outside AnalysisService
+                category_id=category_id,
+                category_name=None,
                 total_amount=comparison.current,
                 previous_total_amount=(
                     comparison.previous if compare_previous_period else None

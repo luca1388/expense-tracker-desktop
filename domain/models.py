@@ -88,7 +88,8 @@ class CategorySummary:
     Docstring for CategorySummary
     """
 
-    category_name: str
+    category_id: int
+    category_name: str | None
     total_amount: float
     previous_total_amount: float | None  # None se non esiste periodo precedente
     delta_percent: float | None  # percentuale di incremento/decremento

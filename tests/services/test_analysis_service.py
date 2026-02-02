@@ -121,7 +121,8 @@ def test_get_expense_summary_returns_valid_structure() -> None:
 
     first_category = result.by_category[0]
     assert isinstance(first_category, CategorySummary)
-    assert isinstance(first_category.category_name, str)
+    assert first_category.category_name is None
+    assert isinstance(first_category.category_id, int)
     assert isinstance(first_category.total_amount, Decimal)
     assert isinstance(first_category.previous_total_amount, Decimal | None)
     assert isinstance(first_category.delta_percent, Decimal | None)
