@@ -1,6 +1,15 @@
+"""
+Configuration file for pytest fixtures.
+"""
+
+import sys
+from pathlib import Path
+
+PROJECT_ROOT = Path(__file__).resolve().parents[1]
+sys.path.insert(0, str(PROJECT_ROOT))
+
 import sqlite3
 import pytest
-
 from persistence.db import init_db
 from persistence.recurring_expense_repository import RecurringExpenseRepository
 from services.recurring_expense_service import RecurringExpenseService

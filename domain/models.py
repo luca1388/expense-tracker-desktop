@@ -4,6 +4,7 @@ from dataclasses import dataclass, field
 from datetime import date, datetime
 from typing import Optional
 from enum import Enum
+from decimal import Decimal
 
 
 @dataclass
@@ -79,3 +80,48 @@ class RecurringExpense:
     last_generated_date: Optional[date]
 
     created_at: datetime = field(default_factory=datetime.now)
+
+
+@dataclass
+class CategorySummary:
+    """
+    Docstring for CategorySummary
+    """
+
+    category_name: str
+    total_amount: float
+    previous_total_amount: float | None  # None se non esiste periodo precedente
+    delta_percent: float | None  # percentuale di incremento/decremento
+
+
+@dataclass
+class OverallSummary:
+    """
+    Represents the overall summary of expenses.
+    """
+
+    total_amount: float
+    previous_total_amount: float | None
+    delta_percent: float | None
+
+
+@dataclass
+class ExpenseAnalysisResult:
+    """
+    Represents the result of an expense analysis.
+    """
+
+    overall: OverallSummary
+    by_category: list[CategorySummary]
+
+
+@dataclass
+class PeriodComparison:
+    """
+    Docstring for PeriodComparison
+    """
+
+    current: Decimal
+    previous: Decimal
+    delta_absolute: Decimal
+    delta_percentage: Decimal | None
