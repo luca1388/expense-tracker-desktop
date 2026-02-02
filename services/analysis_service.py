@@ -3,7 +3,7 @@ Docstring for services.analysis_service
 """
 
 # from collections import defaultdict
-from datetime import date
+from datetime import date, timedelta
 from decimal import Decimal
 
 from domain.models import (
@@ -239,6 +239,27 @@ class AnalysisService:
             ),
         )
 
+    def _get_previous_period(
+        self, start_date: date, end_date: date
+    ) -> tuple[date, date]:
+        """
+        Docstring for _get_previous_period
+
+        :param self: Description
+        :param start_date: Description
+        :type start_date: date
+        :param end_date: Description
+        :type end_date: date
+        :return: Description
+        :rtype: tuple[date, date]
+        """
+        period_length = (end_date - start_date).days + 1  # inclusive
+
+        previous_end_date = start_date - timedelta(days=1)
+        previous_start_date = previous_end_date - timedelta(days=period_length - 1)
+
+        return previous_start_date, previous_end_date
+
     def get_expense_summary(
         self, start_date: date, end_date: date, compare_previous_period: bool = True
     ) -> ExpenseAnalysisResult:
@@ -248,32 +269,69 @@ class AnalysisService:
         This is a stub implementation.
 
         """
+        current_period_start_date = start_date
+        current_period_end_date = end_date
 
-        overall = OverallSummary(
-            total_amount=1200.0,
-            previous_total_amount=1000.0 if compare_previous_period else None,
-            delta_percent=20.0 if compare_previous_period else None,
+        previous_period_start_date, previous_period_end_date = (
+            self._get_previous_period(
+                start_date=current_period_start_date, end_date=current_period_end_date
+            )
         )
 
-        by_category = [
-            CategorySummary(
-                category_name="Food",
-                total_amount=400.0,
-                previous_total_amount=350.0,
-                delta_percent=14.3,
+        overall_comparison = self.compare_total_for_periods(
+            current_start_date=current_period_start_date,
+            current_end_date=current_period_end_date,
+            previous_start_date=previous_period_start_date,
+            previous_end_date=previous_period_end_date,
+        )
+
+        average_comparison = self.compare_daily_average_for_periods(
+            current_start_date=current_period_start_date,
+            current_end_date=current_period_end_date,
+            previous_start_date=previous_period_start_date,
+            previous_end_date=previous_period_end_date,
+        )
+
+        overall = OverallSummary(
+            total_amount=overall_comparison.current,
+            previous_total_amount=(
+                overall_comparison.previous if compare_previous_period else None
             ),
-            CategorySummary(
-                category_name="Rent",
-                total_amount=600.0,
-                previous_total_amount=600.0,
-                delta_percent=0.0,
+            delta_percent=(
+                (
+                    overall_comparison.delta_percentage
+                    if compare_previous_period
+                    else None
+                )
             ),
-            CategorySummary(
-                category_name="Transport",
-                total_amount=200.0,
-                previous_total_amount=50.0,
-                delta_percent=300.0,
+            daily_average=average_comparison.current,
+            previous_daily_average=(
+                average_comparison.previous if compare_previous_period else None
             ),
+            max_single_expense=self.get_max_expense_for_period(
+                start_date=current_period_start_date, end_date=current_period_end_date
+            ).amount,
+        )
+
+        totals = self.compare_totals_by_category_for_periods(
+            current_start_date=current_period_start_date,
+            current_end_date=current_period_end_date,
+            previous_start_date=previous_period_start_date,
+            previous_end_date=previous_period_end_date,
+        )
+
+        by_category: list[CategorySummary] = [
+            CategorySummary(
+                category_name=f"Category {category_id}",  # TODO: map category_id to category name outside AnalysisService
+                total_amount=comparison.current,
+                previous_total_amount=(
+                    comparison.previous if compare_previous_period else None
+                ),
+                delta_percent=(
+                    comparison.delta_percentage if compare_previous_period else None
+                ),
+            )
+            for category_id, comparison in totals.items()
         ]
 
         return ExpenseAnalysisResult(

@@ -91,9 +91,6 @@ class FakeExpenseService:
 
 
 def test_get_expense_summary_returns_valid_structure() -> None:
-    """
-    Docstring for test_get_expense_summary_returns_valid_structure
-    """
     service = AnalysisService(
         expense_service=FakeExpenseService(expenses=[expense1, expense2, expense3])
     )
@@ -108,8 +105,15 @@ def test_get_expense_summary_returns_valid_structure() -> None:
     assert isinstance(result, ExpenseAnalysisResult)
 
     # Overall summary
-    assert isinstance(result.overall, OverallSummary)
-    assert isinstance(result.overall.total_amount, float)
+    overall = result.overall
+    assert isinstance(overall, OverallSummary)
+    assert isinstance(overall.total_amount, Decimal)
+    assert isinstance(overall.daily_average, Decimal)
+    assert isinstance(overall.max_single_expense, Decimal)
+
+    assert isinstance(overall.previous_total_amount, Decimal | None)
+    assert isinstance(overall.previous_daily_average, Decimal | None)
+    assert isinstance(overall.delta_percent, Decimal | None)
 
     # Category summaries
     assert isinstance(result.by_category, list)
@@ -118,7 +122,9 @@ def test_get_expense_summary_returns_valid_structure() -> None:
     first_category = result.by_category[0]
     assert isinstance(first_category, CategorySummary)
     assert isinstance(first_category.category_name, str)
-    assert isinstance(first_category.total_amount, float)
+    assert isinstance(first_category.total_amount, Decimal)
+    assert isinstance(first_category.previous_total_amount, Decimal | None)
+    assert isinstance(first_category.delta_percent, Decimal | None)
 
 
 def test_get_total_by_category():
@@ -254,3 +260,33 @@ def test_compare_totals_by_category_for_periods():
             delta_percentage=Decimal("100.00"),
         ),
     }
+
+
+def test_get_expense_summary_without_previous_period() -> None:
+    service = AnalysisService(
+        expense_service=FakeExpenseService(expenses=[expense1, expense2, expense3])
+    )
+
+    result = service.get_expense_summary(
+        start_date=date(2024, 1, 1),
+        end_date=date(2024, 1, 31),
+        compare_previous_period=False,
+    )
+
+    overall = result.overall
+
+    # Current values are always present
+    assert isinstance(overall.total_amount, Decimal)
+    assert isinstance(overall.daily_average, Decimal)
+    assert isinstance(overall.max_single_expense, Decimal)
+
+    # Previous-period values must be None
+    assert overall.previous_total_amount is None
+    assert overall.previous_daily_average is None
+    assert overall.delta_percent is None
+
+    # Category summaries
+    for category in result.by_category:
+        assert isinstance(category.total_amount, Decimal)
+        assert category.previous_total_amount is None
+        assert category.delta_percent is None

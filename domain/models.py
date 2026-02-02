@@ -103,6 +103,9 @@ class OverallSummary:
     total_amount: float
     previous_total_amount: float | None
     delta_percent: float | None
+    daily_average: float | None
+    previous_daily_average: float | None
+    max_single_expense: float | None
 
 
 @dataclass
