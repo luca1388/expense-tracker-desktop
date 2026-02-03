@@ -116,7 +116,7 @@ def test_get_expense_summary_returns_valid_structure() -> None:
     assert isinstance(overall.delta_percent, Decimal | None)
 
     # Category summaries
-    assert isinstance(result.by_category, list)
+    assert isinstance(result.by_category, tuple)
     assert len(result.by_category) > 0
 
     first_category = result.by_category[0]
@@ -291,3 +291,17 @@ def test_get_expense_summary_without_previous_period() -> None:
         assert isinstance(category.total_amount, Decimal)
         assert category.previous_total_amount is None
         assert category.delta_percent is None
+
+
+def test_summary_contains_period_info() -> None:
+    service = AnalysisService(
+        expense_service=FakeExpenseService(expenses=[expense1, expense2, expense3])
+    )
+
+    result = service.get_expense_summary(
+        start_date=date(2024, 1, 1),
+        end_date=date(2024, 1, 31),
+    )
+
+    assert result.period.start_date == date(2024, 1, 1)
+    assert result.period.end_date == date(2024, 1, 31)

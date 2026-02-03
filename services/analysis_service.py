@@ -12,6 +12,7 @@ from domain.models import (
     ExpenseAnalysisResult,
     OverallSummary,
     PeriodComparison,
+    DateRange,
 )
 from services.expense_service import ExpenseService
 
@@ -336,6 +337,10 @@ class AnalysisService:
         ]
 
         return ExpenseAnalysisResult(
+            period=DateRange(
+                start_date=current_period_start_date,
+                end_date=current_period_end_date,
+            ),
             overall=overall,
-            by_category=by_category,
+            by_category=tuple(by_category),
         )

@@ -82,7 +82,7 @@ class RecurringExpense:
     created_at: datetime = field(default_factory=datetime.now)
 
 
-@dataclass
+@dataclass(frozen=True)
 class CategorySummary:
     """
     Docstring for CategorySummary
@@ -90,36 +90,43 @@ class CategorySummary:
 
     category_id: int
     category_name: str | None
-    total_amount: float
-    previous_total_amount: float | None  # None se non esiste periodo precedente
-    delta_percent: float | None  # percentuale di incremento/decremento
+    total_amount: Decimal
+    previous_total_amount: Decimal | None  # None se non esiste periodo precedente
+    delta_percent: Decimal | None  # percentuale di incremento/decremento
 
 
-@dataclass
+@dataclass(frozen=True)
 class OverallSummary:
     """
     Represents the overall summary of expenses.
     """
 
-    total_amount: float
-    previous_total_amount: float | None
-    delta_percent: float | None
-    daily_average: float | None
-    previous_daily_average: float | None
-    max_single_expense: float | None
+    total_amount: Decimal
+    previous_total_amount: Decimal | None
+    delta_percent: Decimal | None
+    daily_average: Decimal | None
+    previous_daily_average: Decimal | None
+    max_single_expense: Decimal | None
 
 
-@dataclass
+@dataclass(frozen=True)
+class DateRange:
+    start_date: date
+    end_date: date
+
+
+@dataclass(frozen=True)
 class ExpenseAnalysisResult:
     """
     Represents the result of an expense analysis.
     """
 
+    period: DateRange
     overall: OverallSummary
-    by_category: list[CategorySummary]
+    by_category: tuple[CategorySummary]
 
 
-@dataclass
+@dataclass(frozen=True)
 class PeriodComparison:
     """
     Docstring for PeriodComparison
