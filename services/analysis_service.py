@@ -65,7 +65,7 @@ class AnalysisService:
             if category_id not in totals:
                 totals[category_id] = Decimal("0")
 
-            totals[category_id] += expense.amount
+            totals[category_id] += Decimal(expense.amount)
 
         return totals
 
@@ -130,7 +130,7 @@ class AnalysisService:
         total = Decimal("0")
 
         for expense in expenses:
-            total += expense.amount
+            total += Decimal(expense.amount)
 
         return total
 

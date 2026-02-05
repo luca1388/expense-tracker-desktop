@@ -15,8 +15,10 @@ from persistence.recurring_expense_repository import RecurringExpenseRepository
 from services.category_service import CategoryService
 from services.expense_service import ExpenseService, SortDirection, ExpenseSortField
 from services.recurring_expense_service import RecurringExpenseService
+from services.analysis_service import AnalysisService
 from ui.expense_list import ExpenseListFrame
 from ui.toolbar import ToolbarFrame
+from ui.analysis_tab import AnalysisTab
 from ui.add_expense_modal import AddExpenseModal
 from utils.dates import month_date_range
 
@@ -47,6 +49,7 @@ class ExpenseTrackerApp(tk.Tk):
         self.recurring_expense_service = RecurringExpenseService(
             self.recurring_expense_repo, expense_repository
         )
+        self.analysis_service = AnalysisService(expense_service=self.expense_service)
 
         self.recurring_expense_service.generate_missing_expenses(date.today())
 
@@ -70,7 +73,7 @@ class ExpenseTrackerApp(tk.Tk):
 
     def _build_ui(self):
         # --- TOP: Unified toolbar
-        main_frame = ttk.Frame(self, padding=10)
+        main_frame = ttk.Frame(self, padding=(10, 0))
         main_frame.pack(fill=tk.BOTH, expand=True)
 
         self.toolbar = ToolbarFrame(
@@ -86,9 +89,13 @@ class ExpenseTrackerApp(tk.Tk):
         content_frame = ttk.Frame(main_frame)
         content_frame.pack(fill=tk.BOTH, expand=True)
 
+        # Tabs
+        self.notebook = ttk.Notebook(content_frame)
+        self.notebook.pack(fill=tk.BOTH, expand=True)
+
         # Left: Expense list
         self.expense_list = ExpenseListFrame(
-            content_frame,
+            self.notebook,
             expense_service=self.expense_service,
             on_selection_changed=self._on_expense_selection_changed,
             recurring_expense_service=self.recurring_expense_service,
@@ -97,6 +104,15 @@ class ExpenseTrackerApp(tk.Tk):
             on_sort_requested=self.on_sort_requested,
         )
         self.expense_list.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
+
+        self.expenses_tab = self.expense_list
+        self.analysis_tab = AnalysisTab(
+            self.notebook,
+            analysis_service=self.analysis_service,
+        )
+
+        self.notebook.add(self.expenses_tab, text="Spese")
+        self.notebook.add(self.analysis_tab, text="Analisi")
 
         self._on_month_changed(
             self.toolbar.year_var.get(), self.toolbar.get_selected_month_number()
@@ -136,6 +152,8 @@ class ExpenseTrackerApp(tk.Tk):
         if not hasattr(self, "toolbar") or not hasattr(self, "expense_list"):
             return
         start_date, end_date = month_date_range(year, month)
+
+        self.analysis_tab.refresh(start_date=start_date, end_date=end_date)
 
         self.expense_list.refresh(
             start_date=start_date,
