@@ -293,6 +293,14 @@ class AnalysisService:
             previous_end_date=previous_period_end_date,
         )
 
+        max_single_expense = self.get_max_expense_for_period(
+            start_date=current_period_start_date, end_date=current_period_end_date
+        )
+
+        max_single_expense_amount = (
+            max_single_expense.amount if max_single_expense else 0,
+        )
+
         overall = OverallSummary(
             total_amount=overall_comparison.current,
             previous_total_amount=(
@@ -309,9 +317,7 @@ class AnalysisService:
             previous_daily_average=(
                 average_comparison.previous if compare_previous_period else None
             ),
-            max_single_expense=self.get_max_expense_for_period(
-                start_date=current_period_start_date, end_date=current_period_end_date
-            ).amount,
+            max_single_expense=max_single_expense_amount,
         )
 
         totals = self.compare_totals_by_category_for_periods(

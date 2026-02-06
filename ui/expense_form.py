@@ -131,7 +131,10 @@ class ExpenseFormFrame(ttk.Frame):
             }
 
             try:
-                self.on_update_requested(data)
+                self.expense_service.update_expense(
+                    self._expense_to_modify.id,
+                    **data,
+                )
 
                 self._clear_errors()
 

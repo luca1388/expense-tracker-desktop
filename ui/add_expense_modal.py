@@ -45,6 +45,7 @@ class AddExpenseModal(tk.Toplevel):
         self.grab_set()
         self.resizable(False, False)
         self.bind("<Escape>", lambda e: self.destroy())
+        self.on_expense_added = on_expense_added
         # self.bind("<Return>", lambda e: self.submit())
 
         # Position modal relative to parent window
@@ -55,7 +56,6 @@ class AddExpenseModal(tk.Toplevel):
             expense_service,
             category_service,
             recurring_expense_service,
-            on_expense_added,
             on_update_requested,
             expense_id=expense_id,
         )
@@ -84,7 +84,6 @@ class AddExpenseModal(tk.Toplevel):
         expense_service: ExpenseService,
         category_service: CategoryService,
         recurring_expense_service: RecurringExpenseService,
-        on_expense_added,
         on_update_requested,
         expense_id=None,
     ):
@@ -109,10 +108,8 @@ class AddExpenseModal(tk.Toplevel):
             expense_service=expense_service,
             category_service=category_service,
             recurring_expense_service=recurring_expense_service,
-            on_expense_added=lambda: on_expense_added(self),
-            on_update_requested=lambda payload: on_update_requested(
-                expense_id, payload
-            ),
+            on_expense_added=self.add_expense_handler,
+            on_update_requested=on_update_requested,
             expense_to_modify=expense_to_modify,
         )
         form.pack(fill=tk.BOTH, padx=10, pady=10)
@@ -130,3 +127,7 @@ class AddExpenseModal(tk.Toplevel):
             text="Salva",
             command=form.submit,
         ).pack(side=tk.RIGHT)
+
+    def add_expense_handler(self):
+        self.on_expense_added()
+        self.destroy()

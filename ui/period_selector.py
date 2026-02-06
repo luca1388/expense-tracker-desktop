@@ -24,7 +24,7 @@ MONTH_NAMES = [
 ]
 
 
-class ToolbarFrame(ttk.Frame):
+class PeriodSelector(ttk.Frame):
     """
     Unified toolbar containing:
     - Month/year filter selector with prev/next navigation
@@ -35,16 +35,10 @@ class ToolbarFrame(ttk.Frame):
         self,
         parent,
         on_month_changed,
-        on_edit_expense_requested=None,
-        on_delete_expense_requested=None,
-        on_add_expense_requested=None,
     ):
         super().__init__(parent)
 
         self.on_month_changed = on_month_changed
-        self.on_edit_expense_requested = on_edit_expense_requested
-        self.on_delete_expense_requested = on_delete_expense_requested
-        self.on_add_expense_requested = on_add_expense_requested
 
         today = date.today()
         self.year_var = tk.IntVar(value=today.year)
@@ -57,7 +51,7 @@ class ToolbarFrame(ttk.Frame):
 
         # --- LEFT: Filter and navigation
         filter_frame = ttk.Frame(self)
-        filter_frame.pack(side=tk.LEFT, fill=tk.X, expand=False)
+        filter_frame.pack(side=tk.LEFT, fill=tk.X, expand=False, pady=5)
 
         filter_container = ttk.Frame(
             filter_frame,
@@ -102,36 +96,6 @@ class ToolbarFrame(ttk.Frame):
             side=tk.LEFT, padx=5
         )
 
-        # --- MIDDLE: Action buttons
-        action_frame = ttk.Frame(self)
-        action_frame.pack(side=tk.RIGHT, fill=tk.BOTH, expand=True)
-
-        actions_container = ttk.LabelFrame(action_frame, text=" Azioni ", padding="5")
-        actions_container.pack(side=tk.RIGHT, padx=5, fill=tk.X, expand=False)
-
-        self.add_button = ttk.Button(
-            actions_container,
-            text="Nuova spesa",
-            command=self.on_add_expense_requested,
-        )
-        self.add_button.pack(side=tk.LEFT, padx=(5, 0))
-
-        self.edit_button = ttk.Button(
-            actions_container,
-            text="Modifica",
-            command=self.on_edit_expense_requested,
-            state=tk.DISABLED,
-        )
-        self.edit_button.pack(side=tk.LEFT, padx=5)
-
-        self.delete_button = ttk.Button(
-            actions_container,
-            text="Elimina",
-            command=self.on_delete_expense_requested,
-            state=tk.DISABLED,
-        )
-        self.delete_button.pack(side=tk.LEFT, padx=(0, 5))
-
     def get_selected_month_number(self) -> int:
         """Returns the currently selected month number."""
         return MONTH_NAMES.index(self.month_var.get()) + 1
@@ -170,13 +134,3 @@ class ToolbarFrame(ttk.Frame):
         self.year_var.set(today.year)
         self.month_var.set(MONTH_NAMES[today.month - 1])
         self._notify_change()
-
-    def enable_actions(self):
-        """Enable action buttons."""
-        self.edit_button.config(state=tk.NORMAL)
-        self.delete_button.config(state=tk.NORMAL)
-
-    def disable_actions(self):
-        """Disable action buttons."""
-        self.edit_button.config(state=tk.DISABLED)
-        self.delete_button.config(state=tk.DISABLED)

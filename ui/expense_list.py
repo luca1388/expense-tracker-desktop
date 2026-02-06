@@ -11,7 +11,8 @@ from services.category_service import CategoryService
 from services.expense_service import ExpenseService, ExpenseSortField
 from services.recurring_expense_service import RecurringExpenseService
 from utils.frequency_constants import FREQUENCY_LABELS
-
+from ui.expense_actions import ExpenseActions
+from ui.add_expense_modal import AddExpenseModal
 
 COLUMN_SORT_MAPPING = {
     "date": ExpenseSortField.DATE,
@@ -52,13 +53,20 @@ class ExpenseListFrame(ttk.Frame):
         self._on_sort_requested = on_sort_requested
 
         self._build_ui()
-        # Improvement: insert the current month expenses by default
-        # self.refresh(start_date=None, end_date=None)
 
     def _build_ui(self):
-        # Header frame with title and total
-        header_frame = ttk.Frame(self, padding=0)
-        header_frame.pack(anchor="w", fill=tk.X)
+        self.actions = ExpenseActions(
+            self,
+            expense_service=self.expense_service,
+            category_service=self.category_service,
+            recurring_expense_service=self.recurring_expense_service,
+            on_expense_added=self._on_refresh_requested,
+            on_refresh=self._on_refresh_requested,
+            update_expense_requested=self.on_edit_expense_requested,
+            create_expense_requested=self.on_add_expense_requested,
+            delete_expense_requested=self.on_delete_expense_requested,
+        )
+        self.actions.pack(fill=tk.X)
 
         columns = ("id", "data", "importo", "categoria", "descrizione", "frequenza")
 
@@ -304,3 +312,53 @@ class ExpenseListFrame(ttk.Frame):
             )
             print(f"Setting style for column {column_id}: {style}")
             self.tree.heading(column_id, style=style)
+
+    def enable_actions(self):
+        self.actions.enable_actions()
+
+    def disable_actions(self):
+        self.actions.disable_actions()
+
+    def on_edit_expense_requested(self):
+        """Handle edit button click."""
+        expense_id = self.get_selected_expense_id() or None
+        AddExpenseModal(
+            self,
+            expense_service=self.expense_service,
+            category_service=self.category_service,
+            recurring_expense_service=self.recurring_expense_service,
+            on_expense_added=self._on_refresh_requested,
+            on_update_requested=self._on_refresh_requested,
+            expense_id=expense_id,
+        )
+
+    def on_add_expense_requested(self):
+        """Handle add expense action from the toolbar."""
+        AddExpenseModal(
+            self,
+            expense_service=self.expense_service,
+            category_service=self.category_service,
+            recurring_expense_service=self.recurring_expense_service,
+            on_expense_added=self._on_refresh_requested,
+            on_update_requested=None,
+        )
+
+    def on_delete_expense_requested(self):
+        """
+        Handle delete expense action from the toolbar.
+        """
+        expense_id = self.get_selected_expense_id()
+        if expense_id is None:
+            return
+
+        confirmed = messagebox.askyesno(
+            title="Conferma eliminazione",
+            message="Sei sicuro di voler eliminare la spesa selezionata?",
+        )
+        if not confirmed:
+            return
+
+        self.expense_service.delete_expense(expense_id)
+
+        # Refresh current month
+        self._on_refresh_requested()
