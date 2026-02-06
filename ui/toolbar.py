@@ -39,7 +39,7 @@ class ToolbarFrame(ttk.Frame):
         on_delete_expense_requested=None,
         on_add_expense_requested=None,
     ):
-        super().__init__(parent, padding=5)
+        super().__init__(parent)
 
         self.on_month_changed = on_month_changed
         self.on_edit_expense_requested = on_edit_expense_requested
@@ -59,10 +59,13 @@ class ToolbarFrame(ttk.Frame):
         filter_frame = ttk.Frame(self)
         filter_frame.pack(side=tk.LEFT, fill=tk.X, expand=False)
 
-        filter_container = ttk.LabelFrame(
-            filter_frame, text=" Visualizza Periodo ", padding="5"
+        filter_container = ttk.Frame(
+            filter_frame,
+            borderwidth=2,
+            relief="solid",  # flat, raised, sunken, groove, ridge, solid
+            padding=(0, 5),
         )
-        filter_container.pack(side=tk.LEFT, padx=5)
+        filter_container.pack(side=tk.LEFT, padx=0)
 
         ttk.Label(filter_container, text="Anno:").pack(side=tk.LEFT)
 

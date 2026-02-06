@@ -57,17 +57,8 @@ class ExpenseListFrame(ttk.Frame):
 
     def _build_ui(self):
         # Header frame with title and total
-        header_frame = ttk.Frame(self)
-        header_frame.pack(anchor="w", fill=tk.X, pady=(0, 5))
-
-        ttk.Label(header_frame, text="Spese", font=("Arial", 12, "bold")).pack(
-            side=tk.LEFT
-        )
-
-        # self.total_label = ttk.Label(
-        #     header_frame, text="Totale: € 0.00", font=("Arial", 10, "bold")
-        # )
-        # self.total_label.pack(side=tk.RIGHT)
+        header_frame = ttk.Frame(self, padding=0)
+        header_frame.pack(anchor="w", fill=tk.X)
 
         columns = ("id", "data", "importo", "categoria", "descrizione", "frequenza")
 

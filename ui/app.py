@@ -72,7 +72,7 @@ class ExpenseTrackerApp(tk.Tk):
         )
 
     def _build_ui(self):
-        # --- TOP: Unified toolbar
+        # --- TOP
         main_frame = ttk.Frame(self, padding=(10, 0))
         main_frame.pack(fill=tk.BOTH, expand=True)
 
