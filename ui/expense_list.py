@@ -249,7 +249,6 @@ class ExpenseListFrame(ttk.Frame):
         # Salva ID per callback menu
         expense = self.tree.item(item_id, "values")
 
-        # print(f"Right-clicked expense: {expense}")
         is_recurring = True if expense[-1] != "-" else False
         expense_id = int(expense[0])
         expense = self.expense_service.get_by_id(expense_id)
@@ -272,7 +271,6 @@ class ExpenseListFrame(ttk.Frame):
             return
 
         try:
-            # print(f"Stopping recurring expense ID {self._selected_recurring_id}")
             self.recurring_expense_service.stop_recurring_expense(
                 self._selected_recurring_id, end_date=date.today()
             )
@@ -285,9 +283,7 @@ class ExpenseListFrame(ttk.Frame):
             messagebox.showerror("Attenzione", "Questa spesa risulta già interrotta.")
 
     def _on_column_header_clicked(self, column_id: str) -> None:
-        # print(f"Column header clicked: {column_id}")
         sort_field = COLUMN_SORT_MAPPING.get(column_id)
-        # print(f"Mapped sort field: {sort_field}")
         if sort_field is None:
             return
 

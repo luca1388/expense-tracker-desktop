@@ -123,10 +123,6 @@ class AnalysisService:
             start_date=start_date, end_date=end_date
         )
 
-        print("list:")
-        print(expenses)
-        print("\n")
-
         total = Decimal("0")
 
         for expense in expenses:
