@@ -69,12 +69,19 @@
 ## 🔹 FASE 5 – Analisi dati
 
 - [ ] Fase preliminare: valutare se creare un menu di sistema (File, View, ...) dove mettere le actions (nuova spesa) e aprire la view di Analisi
-- [ ] Nuova sezione **Analisi**
+- [x] Nuova sezione **Analisi**
   - UX: dove inserirla?
-- [ ] Confronto spese per categoria
+- [x] Confronto spese per categoria
   - mese corrente vs mese precedente
-- [ ] Totali e variazioni percentuali
+- [x] Totali e variazioni percentuali
 - [ ] Sezione (tab) recap annuale: analisi che mostra l'andamento annuale (grafico con spese di categoria per ogni mese, media mensile di spesa globale e per categoria)
+      ➡ Grafico: spesa per categoria
+      ➡ Grafico: andamento periodo
+      ➡ Bottone "Esporta PDF"
+      ➡ PDF con:
+  - periodo
+  - totali
+  - grafici
 
 ---
 
