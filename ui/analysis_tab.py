@@ -25,12 +25,6 @@ class AnalysisTab(ttk.Frame):
         self._build_ui()
 
     def _build_ui(self) -> None:
-        self.header_label = ttk.Label(
-            self,
-            text="Analisi spese",
-            font=("TkDefaultFont", 12, "bold"),
-        )
-        self.header_label.pack(anchor="w", pady=(10, 10))
 
         # Empty screen
         self.empty_state_label = ttk.Label(
@@ -167,7 +161,7 @@ class AnalysisTab(ttk.Frame):
         return f"{sign}{value:.1f} %"
 
     def _show_empty_state(self) -> None:
-        self.empty_state_label.pack(expand=True, pady=40)
+        self.empty_state_label.pack(expand=True)
         self.content_frame.pack_forget()
 
     def _hide_empty_state(self) -> None:
