@@ -95,9 +95,12 @@ def test_get_expense_summary_returns_valid_structure() -> None:
         expense_service=FakeExpenseService(expenses=[expense1, expense2, expense3])
     )
 
+    category_map = {1: "Food", 2: "Transport"}
+
     result = service.get_expense_summary(
         start_date=date(2024, 1, 1),
         end_date=date(2024, 1, 31),
+        category_map=category_map,
         compare_previous_period=True,
     )
 
@@ -121,7 +124,7 @@ def test_get_expense_summary_returns_valid_structure() -> None:
 
     first_category = result.by_category[0]
     assert isinstance(first_category, CategorySummary)
-    assert first_category.category_name is None
+    assert first_category.category_name is not None
     assert isinstance(first_category.category_id, int)
     assert isinstance(first_category.total_amount, Decimal)
     assert isinstance(first_category.previous_total_amount, Decimal | None)
@@ -268,9 +271,12 @@ def test_get_expense_summary_without_previous_period() -> None:
         expense_service=FakeExpenseService(expenses=[expense1, expense2, expense3])
     )
 
+    category_map = {1: "Food", 2: "Transport"}
+
     result = service.get_expense_summary(
         start_date=date(2024, 1, 1),
         end_date=date(2024, 1, 31),
+        category_map=category_map,
         compare_previous_period=False,
     )
 
@@ -298,9 +304,12 @@ def test_summary_contains_period_info() -> None:
         expense_service=FakeExpenseService(expenses=[expense1, expense2, expense3])
     )
 
+    category_map = {1: "Food", 2: "Transport"}
+
     result = service.get_expense_summary(
         start_date=date(2024, 1, 1),
         end_date=date(2024, 1, 31),
+        category_map=category_map,
     )
 
     assert result.period.start_date == date(2024, 1, 1)

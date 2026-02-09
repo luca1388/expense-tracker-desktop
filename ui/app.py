@@ -103,10 +103,15 @@ class ExpenseTrackerApp(tk.Tk):
         )
         self.expense_list.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
 
+        categories = self.category_service.get_all_categories()
+
+        category_name_map = {category.id: category.name for category in categories}
+
         self.expenses_tab = self.expense_list
         self.analysis_tab = AnalysisTab(
             self.notebook,
             analysis_service=self.analysis_service,
+            category_name_map=category_name_map,
         )
 
         self.notebook.add(self.expenses_tab, text="Spese")

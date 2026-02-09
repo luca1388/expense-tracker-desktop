@@ -258,7 +258,11 @@ class AnalysisService:
         return previous_start_date, previous_end_date
 
     def get_expense_summary(
-        self, start_date: date, end_date: date, compare_previous_period: bool = True
+        self,
+        start_date: date,
+        end_date: date,
+        category_map: dict[int, str],
+        compare_previous_period: bool = True,
     ) -> ExpenseAnalysisResult:
         """
         Return a summary of expenses for the given period.
@@ -293,9 +297,10 @@ class AnalysisService:
             start_date=current_period_start_date, end_date=current_period_end_date
         )
 
-        max_single_expense_amount = (
-            max_single_expense.amount if max_single_expense else 0,
-        )
+        if max_single_expense:
+            max_single_expense_amount = max_single_expense.amount
+        else:
+            max_single_expense_amount = 0
 
         overall = OverallSummary(
             total_amount=overall_comparison.current,
@@ -326,7 +331,7 @@ class AnalysisService:
         by_category: list[CategorySummary] = [
             CategorySummary(
                 category_id=category_id,
-                category_name=None,
+                category_name=category_map.get(category_id),
                 total_amount=comparison.current,
                 previous_total_amount=(
                     comparison.previous if compare_previous_period else None
@@ -343,6 +348,6 @@ class AnalysisService:
                 start_date=current_period_start_date,
                 end_date=current_period_end_date,
             ),
-            overall=overall,
+            overall=overall if overall.total_amount > 0 else None,
             by_category=tuple(by_category),
         )
