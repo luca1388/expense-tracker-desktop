@@ -68,10 +68,21 @@ class ExpenseListFrame(ttk.Frame):
         )
         self.actions.pack(fill=tk.X)
 
+        # Empty screen
+        self.empty_state_label = ttk.Label(
+            self,
+            text="Nessuna spesa nel periodo selezionato",
+            foreground="#777777",
+            font=("TkDefaultFont", 10, "italic"),
+        )
+
+        # Main container for tree and footer
+        self.content_frame = ttk.Frame(self)
+
         columns = ("id", "data", "importo", "categoria", "descrizione", "frequenza")
 
         self.tree = ttk.Treeview(
-            self,
+            self.content_frame,
             columns=columns,
             show="headings",
             selectmode="browse",
@@ -143,7 +154,9 @@ class ExpenseListFrame(ttk.Frame):
         self.tree.pack(fill=tk.BOTH, expand=True)
 
         # 2. FOOTER FISSO (La riga grigia)
-        self.footer = tk.Frame(self, bg="#f0f0f0", height=30)  # Grigio chiaro
+        self.footer = tk.Frame(
+            self.content_frame, bg="#f0f0f0", height=30
+        )  # Grigio chiaro
         self.footer.pack(side=tk.BOTTOM, fill=tk.X)
         self.footer.pack_propagate(False)  # Forza l'altezza fissa
 
@@ -174,6 +187,13 @@ class ExpenseListFrame(ttk.Frame):
                 sort_by=sort_field,
                 direction=sort_direction,
             )
+
+        # Show empty state if no expenses
+        if not expenses:
+            self._show_empty_state()
+            return total
+
+        self._hide_empty_state()
 
         for exp in expenses:
             total += exp.amount
@@ -308,6 +328,14 @@ class ExpenseListFrame(ttk.Frame):
             )
             print(f"Setting style for column {column_id}: {style}")
             self.tree.heading(column_id, style=style)
+
+    def _show_empty_state(self) -> None:
+        self.empty_state_label.pack(expand=True)
+        self.content_frame.pack_forget()
+
+    def _hide_empty_state(self) -> None:
+        self.empty_state_label.pack_forget()
+        self.content_frame.pack(fill=tk.BOTH, expand=True)
 
     def enable_actions(self):
         self.actions.enable_actions()
