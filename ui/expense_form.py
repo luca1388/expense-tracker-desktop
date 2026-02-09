@@ -71,7 +71,9 @@ class ExpenseFormFrame(ttk.Frame):
             )
         )
 
-        categories = self.category_service.get_all_categories()
+        categories = sorted(
+            self.category_service.get_all_categories(), key=lambda c: c.name
+        )
         self.categories = {c.name: c.id for c in categories}
 
         self.is_recurring_var = tk.BooleanVar(value=False)
