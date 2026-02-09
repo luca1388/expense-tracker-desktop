@@ -78,5 +78,9 @@
   {
     "name": "Bambini",
     "type": "Family"
+  },
+  {
+    "name": "Risparmi/investimenti",
+    "type": "Savings"
   }
 ]
