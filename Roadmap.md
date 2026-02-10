@@ -50,6 +50,7 @@
 - [x] Validazione inline
 - [x] Helper text / placeholder
 - [x] Selezione frequenza con combobox (“Spesa singola” default)
+- [ ] Import/export spesa via CSV (to be validated)
 
 ### 3.2 Edit Expense
 
