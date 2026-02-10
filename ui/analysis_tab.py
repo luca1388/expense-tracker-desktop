@@ -80,7 +80,7 @@ class AnalysisTab(ttk.Frame):
 
         data = {c.category_name: c.total_amount for c in result.by_category}
 
-        self.category_pie_chart.render(data)
+        self.category_pie_chart.render(data, total_amount=result.overall.total_amount)
         self._render_by_category(result)
 
     def _render_overall(self, result: ExpenseAnalysisResult) -> None:

@@ -82,7 +82,20 @@ class ExpenseFormFrame(ttk.Frame):
         self.category_combo = ttk.Combobox(
             form, values=list(self.categories.keys()), state="readonly"
         )
-        self.category_combo.current(0)
+
+        # Set current category to the one being modified, or default to 0
+        category_index = 0
+        if self._expense_to_modify:
+            category_name = None
+            for name, cat_id in self.categories.items():
+                if cat_id == self._expense_to_modify.category_id:
+                    category_name = name
+                    break
+
+            if category_name:
+                category_index = list(self.categories.keys()).index(category_name)
+
+        self.category_combo.current(category_index)
 
         self.date_entry = ttk.Entry(form, textvariable=self.date_var)
         self.amount_entry = ttk.Entry(form, textvariable=self.amount_var)

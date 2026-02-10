@@ -6,7 +6,7 @@ Defines the main application window for the Expense Tracker desktop app.
 from datetime import date
 import tkinter as tk
 from tkinter import ttk
-from tkinter import messagebox
+
 
 from persistence.expense_repository import ExpenseRepository
 from persistence.category_repository import CategoryRepository
@@ -19,7 +19,6 @@ from services.analysis_service import AnalysisService
 from ui.expense_list import ExpenseListFrame
 from ui.period_selector import PeriodSelector
 from ui.analysis_tab import AnalysisTab
-from ui.add_expense_modal import AddExpenseModal
 
 from utils.dates import month_date_range
 
@@ -56,6 +55,7 @@ class ExpenseTrackerApp(tk.Tk):
 
         self._sort_field = ExpenseSortField.DATE
         self._sort_direction = SortDirection.ASC
+        self._init_styles()
 
         self._build_ui()
 
@@ -70,6 +70,12 @@ class ExpenseTrackerApp(tk.Tk):
         style.configure(
             "Sorted.Treeview.Heading",
             font=("TkDefaultFont", 10, "bold"),
+        )
+
+        # Notebook tab styles
+        style.configure(
+            "TNotebook.Tab",
+            padding=(8, 2),  # Increase padding (horizontal, vertical)
         )
 
     def _build_ui(self):
