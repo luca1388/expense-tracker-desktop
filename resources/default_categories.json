@@ -82,5 +82,13 @@
   {
     "name": "Risparmi/investimenti",
     "type": "Savings"
+  },
+  {
+    "name": "Spettacoli/eventi",
+    "type": "Entertainment"
+  },
+  {
+    "name": "Tasse",
+    "type": "Utility"
   }
 ]
