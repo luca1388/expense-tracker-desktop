@@ -123,6 +123,9 @@ class ExpenseTrackerApp(tk.Tk):
         self.notebook.add(self.expenses_tab, text="Spese")
         self.notebook.add(self.analysis_tab, text="Analisi")
 
+        # Bind notebook tab change event to refresh analysis tab
+        self.notebook.bind("<<NotebookTabChanged>>", self._on_tab_changed)
+
         self._on_month_changed(
             self.toolbar.year_var.get(), self.toolbar.get_selected_month_number()
         )
@@ -171,6 +174,16 @@ class ExpenseTrackerApp(tk.Tk):
         self.expense_list.disable_actions()
 
         self.analysis_tab.refresh(start_date=start_date, end_date=end_date)
+
+    def _on_tab_changed(self, event):
+        """Callback triggered when a notebook tab is changed."""
+        selected_tab_index = self.notebook.index(self.notebook.select())
+        # If analysis tab is selected, refresh it
+        if selected_tab_index == 1:  # Analysis tab is at index 1
+            start_date, end_date = month_date_range(
+                self.toolbar.year_var.get(), self.toolbar.get_selected_month_number()
+            )
+            self.analysis_tab.refresh(start_date=start_date, end_date=end_date)
 
     def _on_expense_selection_changed(self, selected_id: int | None):
         """Callback triggered when expense selection changes."""
