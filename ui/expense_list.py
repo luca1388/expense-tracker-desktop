@@ -98,10 +98,19 @@ class ExpenseListFrame(ttk.Frame):
         self.tree.bind("<Button-3>", self._on_right_click)
 
         # Menu contestuale
-        self.context_menu = Menu(self, tearoff=0)
-        self.context_menu.add_command(
+        self.context_menu_recurring_expense = Menu(self, tearoff=0)
+        self.context_menu_recurring_expense.add_command(
             label="Interrompi spesa ricorrente",
             command=self._on_stop_recurring_selected,
+        )
+        self.context_menu_expense = Menu(self, tearoff=0)
+        self.context_menu_expense.add_command(
+            label="Modifica spesa",
+            command=self.on_edit_expense_requested,
+        )
+        self.context_menu_expense.add_command(
+            label="Elimina spesa",
+            command=self.on_delete_expense_requested,
         )
 
         self.tree.heading(
@@ -274,10 +283,11 @@ class ExpenseListFrame(ttk.Frame):
         expense = self.expense_service.get_by_id(expense_id)
 
         if not is_recurring:
-            return  # menu disponibile solo per recurring
+            self.context_menu_expense.post(event.x_root, event.y_root)
+            return
 
         self._selected_recurring_id = expense.recurring_expense_id
-        self.context_menu.post(event.x_root, event.y_root)
+        self.context_menu_recurring_expense.post(event.x_root, event.y_root)
 
     def _on_stop_recurring_selected(self):
         if self._selected_recurring_id is None:
