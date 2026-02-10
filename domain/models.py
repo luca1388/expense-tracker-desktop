@@ -136,3 +136,9 @@ class PeriodComparison:
     previous: Decimal
     delta_absolute: Decimal
     delta_percentage: Decimal | None
+
+
+@dataclass(frozen=True)
+class CategoryAmount:
+    category_name: str
+    total_amount: Decimal

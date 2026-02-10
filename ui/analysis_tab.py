@@ -1,9 +1,11 @@
+from ast import List
 from datetime import date
 import tkinter as tk
 from tkinter import ttk
 from decimal import Decimal
+from typing import Iterable
 from services.analysis_service import AnalysisService, ExpenseAnalysisResult
-
+from domain.models import CategoryAmount
 from ui.analysis.category_pie_chart import CategoryPieChart
 
 
@@ -78,9 +80,15 @@ class AnalysisTab(ttk.Frame):
 
         self._render_overall(result)
 
-        data = {c.category_name: c.total_amount for c in result.by_category}
+        data = [
+            CategoryAmount(category_name=c.category_name, total_amount=c.total_amount)
+            for c in result.by_category
+        ]
 
-        self.category_pie_chart.render(data, total_amount=result.overall.total_amount)
+        self.category_pie_chart.render(
+            self.aggregate_categories_for_pie(data, max_slices=6),
+            total_amount=result.overall.total_amount,
+        )
         self._render_by_category(result)
 
     def _render_overall(self, result: ExpenseAnalysisResult) -> None:
@@ -167,3 +175,48 @@ class AnalysisTab(ttk.Frame):
     def _hide_empty_state(self) -> None:
         self.empty_state_label.pack_forget()
         self.content_frame.pack(fill=tk.BOTH, expand=True)
+
+    def aggregate_categories_for_pie(
+        self,
+        categories: Iterable[CategoryAmount],
+        *,
+        max_slices: int = 6,
+    ) -> list[CategoryAmount]:
+        """
+        Aggregate categories for pie chart visualization.
+
+        Keeps the top `max_slices - 1` categories by total_amount and groups
+        the remaining ones into a single 'Altro' category.
+
+        If the number of categories is less than or equal to max_slices,
+        no aggregation is performed.
+        """
+        categories = list(categories)
+
+        # Sort categories by amount descending
+        sorted_categories = sorted(
+            categories,
+            key=lambda c: c.total_amount,
+            reverse=True,
+        )
+
+        if len(categories) <= max_slices:
+            return sorted_categories
+
+        visible = sorted_categories[: max_slices - 1]
+        hidden = sorted_categories[max_slices - 1 :]
+
+        other_total = sum(
+            (c.total_amount for c in hidden),
+            start=Decimal("0"),
+        )
+
+        if other_total > Decimal("0"):
+            visible.append(
+                CategoryAmount(
+                    category_name="Altro",
+                    total_amount=other_total,
+                )
+            )
+
+        return visible
