@@ -351,3 +351,31 @@ class AnalysisService:
             overall=overall if overall.total_amount > 0 else None,
             by_category=tuple(by_category),
         )
+
+    def get_daily_totals_for_period(
+        self, start_date: date, end_date: date
+    ) -> dict[date, Decimal]:
+        """
+        Docstring for get_daily_totals_for_period
+        """
+        expenses = self._expense_service.get_expenses_for_period(
+            start_date=start_date, end_date=end_date
+        )
+
+        daily_totals: dict[date, Decimal] = {}
+
+        for expense in expenses:
+            expense_date = expense.date
+
+            if expense_date not in daily_totals:
+                daily_totals[expense_date] = Decimal("0")
+
+            daily_totals[expense_date] += Decimal(expense.amount)
+
+        current = start_date
+        while current <= end_date:
+            if current not in daily_totals:
+                daily_totals[current] = Decimal("0")
+            current += timedelta(days=1)
+
+        return daily_totals

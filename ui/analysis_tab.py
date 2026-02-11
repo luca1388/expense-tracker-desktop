@@ -1,4 +1,3 @@
-from ast import List
 from datetime import date
 import tkinter as tk
 from tkinter import ttk
@@ -7,6 +6,7 @@ from typing import Iterable
 from services.analysis_service import AnalysisService, ExpenseAnalysisResult
 from domain.models import CategoryAmount
 from ui.analysis.category_pie_chart import CategoryPieChart
+from ui.analysis.daily_bar_chart import DailyBarChart
 
 
 class AnalysisTab(ttk.Frame):
@@ -23,6 +23,8 @@ class AnalysisTab(ttk.Frame):
         self.header_label = None
         self.overall_frame = None
         self.categories_frame = None
+        self.current_start_date = None
+        self.current_end_date = None
 
         self._build_ui()
 
@@ -36,6 +38,8 @@ class AnalysisTab(ttk.Frame):
             font=("TkDefaultFont", 10, "italic"),
         )
 
+        self.chart_type = tk.StringVar(value="pie")
+
         # Main grid container
         self.content_frame = ttk.Frame(self)
         self.content_frame.pack(fill=tk.BOTH, expand=True)
@@ -43,35 +47,72 @@ class AnalysisTab(ttk.Frame):
         self.content_frame.columnconfigure(0, weight=0, minsize=150)
         self.content_frame.columnconfigure(1, weight=1, minsize=300)
         self.content_frame.rowconfigure(0, weight=0)
-        self.content_frame.rowconfigure(1, weight=1)
+        self.content_frame.rowconfigure(1, weight=0)
+        self.content_frame.rowconfigure(2, weight=1)
 
-        # Overall summary (sinistra)
+        # Overall summary
         self.overall_frame = ttk.Frame(self.content_frame)
         self.overall_frame.grid(
             row=0, column=0, sticky="nsew", padx=(0, 10), pady=(0, 10)
         )
 
-        # Categories (destra)
+        # Categories
         self.categories_frame = ttk.Frame(self.content_frame)
         self.categories_frame.grid(row=0, column=1, sticky="nsew", pady=(0, 10))
 
-        # Pie chart (sinistra)
-        self.pie_chart_frame = ttk.Frame(self.content_frame)
-        self.pie_chart_frame.grid(row=1, column=1, sticky="nsew", padx=(0, 10))
+        # Toolbar (below categories)
+        toolbar = ttk.Frame(self.content_frame)
+        toolbar.grid(row=1, column=1, sticky="w", padx=(0, 10), pady=(5, 10))
 
-        self.category_pie_chart = CategoryPieChart(self.pie_chart_frame)
+        ttk.Radiobutton(
+            toolbar,
+            text="Per categoria",
+            variable=self.chart_type,
+            value="pie",
+            command=self._on_chart_type_changed,
+        ).pack(side=tk.LEFT)
+
+        ttk.Radiobutton(
+            toolbar,
+            text="Andamento giornaliero",
+            variable=self.chart_type,
+            value="daily",
+            command=self._on_chart_type_changed,
+        ).pack(side=tk.LEFT, padx=(10, 0))
+
+        # Pie chart
+        self.chart_container = ttk.Frame(self.content_frame)
+        self.chart_container.grid(row=2, column=1, sticky="nsew", padx=(0, 10))
+
+        self.category_pie_chart = CategoryPieChart(self.chart_container)
         self.category_pie_chart.pack(fill=tk.BOTH, expand=True)
 
-        # Other charts (destra)
-        # self.other_charts_frame = ttk.Frame(self.content_frame)
-        # self.other_charts_frame.grid(row=1, column=1, sticky="nsew")
+        # Bar charts
+        self.bar_chart = DailyBarChart(self.chart_container)
+        self.bar_chart.pack(fill=tk.BOTH, expand=True)
+
+    def _on_chart_type_changed(self) -> None:
+        for child in self.chart_container.winfo_children():
+            child.pack_forget()
+
+        if self.chart_type.get() == "pie":
+            self.category_pie_chart.pack(fill=tk.BOTH, expand=True)
+        else:
+            self.bar_chart.pack(fill=tk.BOTH, expand=True)
+
+        if self.current_start_date and self.current_end_date:
+            self.refresh(self.current_start_date, self.current_end_date)
 
     def refresh(self, start_date: date, end_date: date):
+        self.current_start_date = start_date
+        self.current_end_date = end_date
         result = self.analysis_service.get_expense_summary(
             start_date, end_date, self.category_name_map
         )
+        daily_totals = self.analysis_service.get_daily_totals_for_period(
+            start_date=start_date, end_date=end_date
+        )
 
-        # rendering in step successivo
         if not result.overall:
             self._show_empty_state()
             return
@@ -85,10 +126,13 @@ class AnalysisTab(ttk.Frame):
             for c in result.by_category
         ]
 
-        self.category_pie_chart.render(
-            self.aggregate_categories_for_pie(data, max_slices=6),
-            total_amount=result.overall.total_amount,
-        )
+        if self.chart_type.get() == "pie":
+            self.category_pie_chart.render(
+                self.aggregate_categories_for_pie(data, max_slices=6),
+                total_amount=result.overall.total_amount,
+            )
+        else:
+            self.bar_chart.update_chart(daily_totals)
         self._render_by_category(result)
 
     def _render_overall(self, result: ExpenseAnalysisResult) -> None:
