@@ -209,3 +209,5 @@ __marimo__/
 *.db
 data/*.pdf
 *.txt
+
+.idea/
