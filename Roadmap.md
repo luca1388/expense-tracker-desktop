@@ -75,14 +75,16 @@
 - [x] Confronto spese per categoria
   - mese corrente vs mese precedente
 - [x] Totali e variazioni percentuali
-- [ ] Sezione (tab) recap annuale: analisi che mostra l'andamento annuale (grafico con spese di categoria per ogni mese, media mensile di spesa globale e per categoria)
-      ➡ Grafico: spesa per categoria
-      ➡ Grafico: andamento periodo
-      ➡ Bottone "Esporta PDF"
-      ➡ PDF con:
+- [ ] Sezione (tab) recap annuale: analisi che mostra l'andamento annuale (grafico con spese di categoria per ogni mese, media mensile di spesa globale e per categoria). Deve essere una voce del period selector dove invece del mese si selezione "Tutto l'anno"
+  - Per il grafico a barre deve esserci un dropdown menu in cui si seleziona la categoria per visualizzare mese per mese l'andamento delle spese per quella categoria
+    ➡ Grafico: spesa per categoria
+    ➡ Grafico: andamento periodo
+    ➡ Bottone "Esporta PDF"
+    ➡ PDF con:
   - periodo
   - totali
   - grafici
+    [ ] creare sotto categorie in modo da avere sia il raggruppamento per cluster (bollette) sia la granularità del tipo di bolletta (luce, gas, ...)
 
 ---
 
