@@ -142,3 +142,4 @@ class PeriodComparison:
 class CategoryAmount:
     category_name: str
     total_amount: Decimal
+    category_id: str

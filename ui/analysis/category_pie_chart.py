@@ -25,7 +25,12 @@ class CategoryPieChart(ttk.Frame):
         self.canvas_widget = self.canvas.get_tk_widget()
         self.canvas_widget.pack(fill=tk.BOTH, expand=True)
 
-    def render(self, data: list[CategoryAmount], total_amount: Decimal) -> None:
+    def render(
+        self,
+        data: list[CategoryAmount],
+        total_amount: Decimal,
+        selected_category_id=None,
+    ) -> None:
         """
         Render the pie chart using category totals.
 
@@ -37,6 +42,8 @@ class CategoryPieChart(ttk.Frame):
             self._render_empty_state()
             return
 
+        explode = [0.1 if c.category_id == selected_category_id else 0.0 for c in data]
+
         labels = [c.category_name for c in data]
         values = [c.total_amount for c in data]
         wedges, texts = self.ax.pie(
@@ -44,6 +51,7 @@ class CategoryPieChart(ttk.Frame):
             labels=None,
             startangle=90,
             pctdistance=1.3,
+            explode=explode,
         )
 
         legend_labels = [

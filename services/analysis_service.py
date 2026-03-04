@@ -379,3 +379,32 @@ class AnalysisService:
             current += timedelta(days=1)
 
         return daily_totals
+
+    def get_daily_totals_for_period_and_category(
+        self, start_date: date, end_date: date, category_id: int
+    ) -> dict[date, Decimal]:
+        """
+        Docstring for get_daily_totals_for_period_and_category
+        """
+        expenses = self._expense_service.get_expenses_for_period(
+            start_date=start_date, end_date=end_date
+        )
+
+        daily_totals: dict[date, Decimal] = {}
+
+        for expense in expenses:
+            if expense.category_id == category_id:
+                expense_date = expense.date
+
+                if expense_date not in daily_totals:
+                    daily_totals[expense_date] = Decimal("0")
+
+                daily_totals[expense_date] += Decimal(expense.amount)
+
+        current = start_date
+        while current <= end_date:
+            if current not in daily_totals:
+                daily_totals[current] = Decimal("0")
+            current += timedelta(days=1)
+
+        return daily_totals
