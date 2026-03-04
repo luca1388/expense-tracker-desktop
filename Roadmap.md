@@ -93,6 +93,7 @@
 - [ ] Versione App (`APP_VERSION`)
 - [ ] Versione DB (`DB_VERSION`)
 - [ ] Notifica se esiste una versione più recente dell’app
+- [ ] Packaging dell'app e distribuzione
 
 ---
 
