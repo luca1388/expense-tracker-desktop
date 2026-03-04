@@ -314,3 +314,41 @@ def test_summary_contains_period_info() -> None:
 
     assert result.period.start_date == date(2024, 1, 1)
     assert result.period.end_date == date(2024, 1, 31)
+
+
+def test_get_daily_totals_for_period_and_category():
+    service = AnalysisService(
+        expense_service=FakeExpenseService(expenses=[expense1, expense2, expense3])
+    )
+
+    # Test with category_id=1 (Food)
+    result = service.get_daily_totals_for_period_and_category(
+        start_date=date(2024, 1, 1),
+        end_date=date(2024, 1, 31),
+        category_id=1,
+    )
+
+    # Should have entries for all 31 days
+    assert len(result) == 31
+
+    # Specific days with expenses
+    assert result[date(2024, 1, 10)] == Decimal("10.00")
+    assert result[date(2024, 1, 15)] == Decimal("20.00")
+
+    # Days without expenses should be zero
+    assert result[date(2024, 1, 1)] == Decimal("0")
+    assert result[date(2024, 1, 20)] == Decimal("0")
+
+    # Test with category_id=2 (Transport)
+    result_category_2 = service.get_daily_totals_for_period_and_category(
+        start_date=date(2024, 1, 1),
+        end_date=date(2024, 1, 31),
+        category_id=2,
+    )
+
+    # Should have entry for day with expense
+    assert result_category_2[date(2024, 1, 20)] == Decimal("5.00")
+
+    # Category 1 expenses should not appear
+    assert result_category_2[date(2024, 1, 10)] == Decimal("0")
+    assert result_category_2[date(2024, 1, 15)] == Decimal("0")
