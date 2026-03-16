@@ -143,7 +143,6 @@ expense_tracker/
 
 - Le ricorrenze sono entità separate
 - All’avvio dell’app:
-
   - si controllano le ricorrenze attive
   - se `next_date <= oggi` → si genera una nuova spesa
   - si aggiorna `next_date`
@@ -279,8 +278,3 @@ Ogni nuova feature deve rispettare:
 - i boundaries definiti
 - l’architettura stabilita
 - il principio di semplicità
-
-## 13. Future steps
-
-The app currently tracks expenses only.
-Future versions may support expense adjustments or reimbursements without introducing full income tracking.
