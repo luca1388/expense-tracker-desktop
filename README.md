@@ -45,6 +45,7 @@ Offline-first desktop application to track personal and recurring expenses, with
 ├─ services/
 │   ├─ category_service.py
 │   ├─ expense_service.py
+│   ├─ analysis_service.py
 │   └─ recurring_expense_service.py
 ├─ ui/
 │   ├─ app.py
@@ -84,7 +85,7 @@ pip install -r requirements.txt
 ### Running the Application
 
 ```bash
-python main.py
+python main_ui.py
 ```
 
 This will initialize the database and load base categories.

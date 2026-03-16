@@ -99,10 +99,8 @@
 
 ## 🔹 FASE 7 – Rifiniture UI generali
 
-- [ ] Migliorare allineamenti e spaziature
-- [ ] Migliore leggibilità tabella
-- [ ] Stati hover / selected più chiari
-- [ ] Empty screen al primo avvio dell'app
+- [x] Migliorare allineamenti e spaziature
+- [x] Empty screen al primo avvio dell'app
 
 ## 🔹 FASE 8 – Versione 2 dell'app: AI support
 
